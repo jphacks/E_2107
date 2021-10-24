@@ -8,10 +8,7 @@ export default function SignIn() {
   return (
     <>
 
-    <p>ページDにいます。</p>
-    <Button variant="contained" component={Link} to="/profile">
-        sign in
-      </Button>
+    <p>sign in</p>
 
       </>
 

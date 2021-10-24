@@ -17,10 +17,16 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function SignUp() {
+export default function TopPage() {
+  const classes = useStyles();
   return (
     <>
-      <p>signin upページ</p>
-    </>
+    <div className={classes.container}>
+      <p>トップページ</p>
+      <Button variant="contained" component={Link} to="/signup">
+        sign upして初める
+      </Button>
+      </div>
+      </>
   );
 }

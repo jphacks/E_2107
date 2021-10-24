@@ -9,9 +9,6 @@ export default function Profile() {
     <>
 
     <p>Profileにいます。</p>
-    <Button variant="contained"　component={Link} to="/edit">edit</Button>
-    <Button variant="contained"　component={Link} to="/friends">friends</Button>
-    <Button variant="contained"　component={Link} to="/setting">setting</Button>
     </>
   )
 };
