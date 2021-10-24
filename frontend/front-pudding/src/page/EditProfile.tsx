@@ -7,8 +7,7 @@ export default function EditProfile() {
 
   return (
 <>
-    <p>sigin upページ</p>
-    <Button variant="contained"　component={Link} to="/profile">back</Button>
+    <p>編集</p>
 </>
   )
 };

@@ -23,19 +23,29 @@ import List from "@mui/material/List";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import MailIcon from "@mui/icons-material/Mail";
 import MuiAppBar from "@mui/material/AppBar";
 import Button from "@mui/material/Button";
 import ListItemButton from "@mui/material/ListItemButton";
+import MenuIcon from './image/icons8-four-squares-64.png';
+import UserIcon from './image/icons8-female-profile-64.png';
+import EditIcon from './image/icons8-edit-64.png';
+import FriendsIcon from './image/icons8-conference-64.png';
+import SettingIcon from './image/icons8-settings-64.png';
+import { makeStyles } from '@mui/styles';
 
-const drawerWidth = 240;
+const useStyles = makeStyles(theme => ({
+  title: {
+    flexGrow: 1,
+    textAlign: 'center',
+  },
+}));
+
+const drawerWidth = 180;
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({
@@ -85,7 +95,8 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 function App() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
-  const [selectedIndex, setSelectedIndex] = React.useState(1);
+  const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const classes = useStyles();
 
   const handleListItemClick = (event, index) => {
     setSelectedIndex(index);
@@ -104,7 +115,7 @@ function App() {
       <Switch>
         <Box sx={{ display: "flex" }}>
           <CssBaseline />
-          <AppBar position="fixed" open={open}>
+          <AppBar position="fixed" open={open} color="transparent">
             <Toolbar>
               <IconButton
                 color="inherit"
@@ -113,9 +124,9 @@ function App() {
                 edge="start"
                 sx={{ mr: 2, ...(open && { display: "none" }) }}
               >
-                <MenuIcon />
+                <img src={MenuIcon}  alt="アイコン" width="40" height="40"/>
               </IconButton>
-              <Typography variant="h6" noWrap component="div">
+              <Typography variant="h4" noWrap component="div" className={classes.title}>
                 プリン
               </Typography>
             </Toolbar>
@@ -149,7 +160,18 @@ function App() {
                 onClick={(event) => handleListItemClick(event, 0)}
                 component={Link} to="/profile"
               >
-                  プロフィール
+                <img src={UserIcon}  alt="アイコン" width="40" height="40"/>
+                  マイページ
+              </ListItemButton>
+            </List>
+            <List>
+              <ListItemButton
+                selected={selectedIndex === 0}
+                onClick={(event) => handleListItemClick(event, 0)}
+                component={Link} to="/profile"
+              >
+                <img src={EditIcon}  alt="アイコン" width="40" height="40"/>
+                  追加・編集
               </ListItemButton>
             </List>
             <List>
@@ -158,6 +180,7 @@ function App() {
                 onClick={(event) => handleListItemClick(event, 1)}
                 component={Link} to="/friends"
               >
+                <img src={FriendsIcon}  alt="アイコン" width="40" height="40"/>
                   友達
               </ListItemButton>
             </List>
@@ -167,6 +190,7 @@ function App() {
                 onClick={(event) => handleListItemClick(event, 2)}
                 component={Link} to="/setting"
               >
+                <img src={SettingIcon}  alt="アイコン" width="40" height="40"/>
                   設定
               </ListItemButton>
             </List>

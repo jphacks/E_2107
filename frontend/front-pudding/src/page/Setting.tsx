@@ -7,8 +7,7 @@ export default function Setting() {
   return (
     <>
 
-    <p>ページが見つかりません</p>
-    <Button variant="contained"　component={Link} to="/profile">back</Button>
+    <p>設定</p>
     </>
   )
 };
