@@ -40,7 +40,8 @@ INSTALLED_APPS = [
 
     # 追加分
     'rest_framework',
-    'corsheaders'
+    'corsheaders',
+    'self_introductions',
 ]
 
 # DRFの設定
