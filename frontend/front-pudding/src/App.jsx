@@ -166,8 +166,8 @@ function App() {
             </List>
             <List>
               <ListItemButton
-                selected={selectedIndex === 0}
-                onClick={(event) => handleListItemClick(event, 0)}
+                selected={selectedIndex === 1}
+                onClick={(event) => handleListItemClick(event, 1)}
                 component={Link} to="/profile"
               >
                 <img src={EditIcon}  alt="アイコン" width="40" height="40"/>
@@ -176,8 +176,8 @@ function App() {
             </List>
             <List>
               <ListItemButton
-                selected={selectedIndex === 1}
-                onClick={(event) => handleListItemClick(event, 1)}
+                selected={selectedIndex === 2}
+                onClick={(event) => handleListItemClick(event, 2)}
                 component={Link} to="/friends"
               >
                 <img src={FriendsIcon}  alt="アイコン" width="40" height="40"/>
@@ -186,8 +186,8 @@ function App() {
             </List>
             <List>
               <ListItemButton
-                selected={selectedIndex === 2}
-                onClick={(event) => handleListItemClick(event, 2)}
+                selected={selectedIndex === 3}
+                onClick={(event) => handleListItemClick(event, 3)}
                 component={Link} to="/setting"
               >
                 <img src={SettingIcon}  alt="アイコン" width="40" height="40"/>
