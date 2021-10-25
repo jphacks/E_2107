@@ -107,14 +107,14 @@ export default function Profile() {
         <Grid item md={4} xs={6} className={classes.bottom}>
           <Container fixed>
             <Box className={classes.outerCircle} onClick={handleClickOpen}>
-              <Typography variant="h5">趣味</Typography>
+              <Typography variant="h5">出身</Typography>
             </Box>
           </Container>
         </Grid>
         <Grid item md={4} xs={6} className={classes.center}>
           <Container fixed>
             <Box className={classes.outerCircle} onClick={handleClickOpen}>
-              <Typography variant="h5">趣味</Typography>
+              <Typography variant="h5">大学</Typography>
             </Box>
           </Container>
         </Grid>
@@ -127,9 +127,9 @@ export default function Profile() {
         </Grid>
         <Grid item md={4} xs={6} className={classes.center}>
           <Container fixed>
-            <Box className={classes.outerCircle} onClick={handleClickOpen}>
+            {/* <Box className={classes.outerCircle} onClick={handleClickOpen}>
               <Typography variant="h5">趣味</Typography>
-            </Box>
+            </Box> */}
           </Container>
         </Grid>
         <Grid item md={4} xs={6} className={classes.center}>
@@ -191,29 +191,29 @@ export default function Profile() {
         </Grid>
         <Grid item md={4} xs={6} className={classes.center}>
           <Container fixed>
-            <Box className={classes.outerCircle} onClick={handleClickOpen}>
+            {/* <Box className={classes.outerCircle} onClick={handleClickOpen}>
               <Typography variant="h5">趣味</Typography>
-            </Box>
+            </Box> */}
           </Container>
         </Grid>
         <Grid item md={4} xs={6} className={classes.top}>
           <Container fixed>
             <Box className={classes.outerCircle} onClick={handleClickOpen}>
-              <Typography variant="h5">趣味</Typography>
+              <Typography variant="h5">好きな食べ物</Typography>
             </Box>
           </Container>
         </Grid>
         <Grid item md={4} xs={6} className={classes.center}>
           <Container fixed>
             <Box className={classes.outerCircle} onClick={handleClickOpen}>
-              <Typography variant="h5">趣味</Typography>
+              <Typography variant="h5">好きな曲</Typography>
             </Box>
           </Container>
         </Grid>
         <Grid item md={4} xs={12} className={classes.top}>
           <Container fixed>
             <Box className={classes.outerCircle} onClick={handleClickOpen}>
-              <Typography variant="h5">趣味</Typography>
+              <Typography variant="h5">マイブーム</Typography>
             </Box>
           </Container>
         </Grid>
