@@ -1,12 +1,9 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import Button from "@mui/material/Button";
 import { makeStyles } from "@mui/styles";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Avatar from "@mui/material/Avatar";
-import MenuIcon from "../image/icons8-female-profile-64.png";
 import Container from "@mui/material/Container";
 import HiguIcon from "../image/higuSample.jpg";
 import TwitterIcon from "../image/Twitter social icons - circle - blue.png";

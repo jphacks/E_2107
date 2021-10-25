@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 
@@ -9,8 +9,6 @@ import SignIn from "./page/SignIn";
 import Setting from "./page/Setting";
 import EditProfile from "./page/EditProfile";
 import FriendsList from "./page/FriendsList";
-
-import Router from "./Router";
 
 import { Link } from "react-router-dom";
 
@@ -25,24 +23,22 @@ import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import ListItem from "@mui/material/ListItem";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
 import MuiAppBar from "@mui/material/AppBar";
-import Button from "@mui/material/Button";
 import ListItemButton from "@mui/material/ListItemButton";
-import MenuIcon from './image/icons8-four-squares-64.png';
-import UserIcon from './image/icons8-female-profile-64.png';
-import EditIcon from './image/icons8-edit-64.png';
-import FriendsIcon from './image/icons8-conference-64.png';
-import SettingIcon from './image/icons8-settings-64.png';
-import { makeStyles } from '@mui/styles';
-import { height } from "@mui/system";
+import MenuIcon from "./image/icons8-four-squares-64.png";
+import UserIcon from "./image/icons8-female-profile-64.png";
+import EditIcon from "./image/icons8-edit-64.png";
+import FriendsIcon from "./image/icons8-conference-64.png";
+import SettingIcon from "./image/icons8-settings-64.png";
+import { makeStyles } from "@mui/styles";
 
-const useStyles = makeStyles(theme => ({
+import axios from "axios";
+import { isTemplateExpression } from "typescript";
+
+const useStyles = makeStyles((theme) => ({
   title: {
     flexGrow: 1,
-    textAlign: 'center',
+    textAlign: "center",
   },
 }));
 
@@ -70,13 +66,13 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
 })(({ theme, open }) => ({
-  height : 64,
+  height: 64,
   transition: theme.transitions.create(["margin", "width"], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
   ...(open && {
-    height : 64,
+    height: 64,
     width: `calc(100% - ${drawerWidth}px)`,
     marginLeft: `${drawerWidth}px`,
     transition: theme.transitions.create(["margin", "width"], {
@@ -113,6 +109,23 @@ function App() {
     setOpen(false);
   };
 
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get(`http://localhost:8000/self_introductions/`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then(
+        (response) => {
+          console.log(response.data);
+          setData(response.data);
+        }
+      );
+  }, []);
+
   return (
     <BrowserRouter>
       <Switch>
@@ -127,11 +140,19 @@ function App() {
                 edge="start"
                 sx={{ mr: 2, ...(open && { display: "none" }) }}
               >
-                <img src={MenuIcon}  alt="アイコン" width="40" height="40"/>
+                <img src={MenuIcon} alt="アイコン" width="40" height="40" />
               </IconButton>
-              <Typography variant="h4" noWrap component="div" className={classes.title}>
-                プリン
-              </Typography>
+              {data.map((item) => (
+                <Typography
+                  variant="h4"
+                  noWrap
+                  component="div"
+                  className={classes.title}
+                  key={item.id}
+                >
+                  プリン{item.name}
+                </Typography>
+              ))}
             </Toolbar>
           </AppBar>
           <Drawer
@@ -161,40 +182,44 @@ function App() {
               <ListItemButton
                 selected={selectedIndex === 0}
                 onClick={(event) => handleListItemClick(event, 0)}
-                component={Link} to="/profile"
+                component={Link}
+                to="/profile"
               >
-                <img src={UserIcon}  alt="アイコン" width="40" height="40"/>
-                  マイページ
+                <img src={UserIcon} alt="アイコン" width="40" height="40" />
+                マイページ
               </ListItemButton>
             </List>
             <List>
               <ListItemButton
                 selected={selectedIndex === 1}
                 onClick={(event) => handleListItemClick(event, 1)}
-                component={Link} to="/profile"
+                component={Link}
+                to="/profile"
               >
-                <img src={EditIcon}  alt="アイコン" width="40" height="40"/>
-                  追加・編集
+                <img src={EditIcon} alt="アイコン" width="40" height="40" />
+                追加・編集
               </ListItemButton>
             </List>
             <List>
               <ListItemButton
                 selected={selectedIndex === 2}
                 onClick={(event) => handleListItemClick(event, 2)}
-                component={Link} to="/friends"
+                component={Link}
+                to="/friends"
               >
-                <img src={FriendsIcon}  alt="アイコン" width="40" height="40"/>
-                  友達
+                <img src={FriendsIcon} alt="アイコン" width="40" height="40" />
+                友達
               </ListItemButton>
             </List>
             <List>
               <ListItemButton
                 selected={selectedIndex === 3}
                 onClick={(event) => handleListItemClick(event, 3)}
-                component={Link} to="/setting"
+                component={Link}
+                to="/setting"
               >
-                <img src={SettingIcon}  alt="アイコン" width="40" height="40"/>
-                  設定
+                <img src={SettingIcon} alt="アイコン" width="40" height="40" />
+                設定
               </ListItemButton>
             </List>
             {/* <List>
