@@ -37,6 +37,7 @@ import EditIcon from './image/icons8-edit-64.png';
 import FriendsIcon from './image/icons8-conference-64.png';
 import SettingIcon from './image/icons8-settings-64.png';
 import { makeStyles } from '@mui/styles';
+import { height } from "@mui/system";
 
 const useStyles = makeStyles(theme => ({
   title: {
@@ -69,11 +70,13 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
 })(({ theme, open }) => ({
+  height : 64,
   transition: theme.transitions.create(["margin", "width"], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
   ...(open && {
+    height : 64,
     width: `calc(100% - ${drawerWidth}px)`,
     marginLeft: `${drawerWidth}px`,
     transition: theme.transitions.create(["margin", "width"], {
