@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { makeStyles } from "@mui/styles";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
@@ -58,17 +59,24 @@ const useStyles = makeStyles((theme) => ({
 const emails = ["username@gmail.com", "user02@gmail.com"];
 
 function SimpleDialog(props) {
-  const { onClose, selectedValue, open } = props;
+  const { onClose, selectedValue, open, data, category} = props;
 
   const handleClose = () => {
     onClose(selectedValue);
   };
 
+
   return (
     <Dialog onClose={handleClose} open={open}>
       <DialogTitle>higuの趣味</DialogTitle>
       <DialogContent>
-        <DialogContentText>料理・カフェ巡り</DialogContentText>
+      {category === "born" && <DialogContentText>{data.born}</DialogContentText>}
+      {category === "job" && <DialogContentText>{data.job}</DialogContentText>}
+      {category === "hobby" && <DialogContentText>{data.hobby}</DialogContentText>}
+      {category === "talent" && <DialogContentText>{data.talent}</DialogContentText>}
+      {!category  && <DialogContentText>ありません</DialogContentText>}
+        {/* <DialogContentText>{data.born}</DialogContentText>
+        <DialogContentText>{data.hobby}</DialogContentText> */}
       </DialogContent>
     </Dialog>
   );
@@ -84,8 +92,10 @@ export default function Profile() {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [selectedValue, setSelectedValue] = React.useState(emails[1]);
+  const [category, setCategory] = useState("");
 
-  const handleClickOpen = () => {
+  const handleClickOpen = (props) => {
+    setCategory(props);
     setOpen(true);
   };
 
@@ -93,6 +103,28 @@ export default function Profile() {
     setOpen(false);
     setSelectedValue(value);
   };
+
+  const [data, setData] = useState([]);
+  // const { id } = useParams();
+
+  useEffect(() => {
+    axios
+      .get(`http://localhost:8000/self_introductions/`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then(
+        (response) => {
+          // console.log(response.data.filter((user) => user.name === "higu"));
+          console.log(response.data);
+          //一つしか入れてない
+          setData(...response.data);
+
+        }
+      );
+  }, []);
+
   return (
     <div>
       <Grid container spacing={0} className={classes.container}>
@@ -100,31 +132,33 @@ export default function Profile() {
           selectedValue={selectedValue}
           open={open}
           onClose={handleClose}
+          data={data}
+          category={category}
         />
         <Grid item md={4} xs={6} className={classes.bottom}>
           <Container fixed>
-            <Box className={classes.outerCircle} onClick={handleClickOpen}>
+            <Box className={classes.outerCircle} onClick={() => handleClickOpen("born")}>
               <Typography variant="h5">出身</Typography>
             </Box>
           </Container>
         </Grid>
         <Grid item md={4} xs={6} className={classes.center}>
           <Container fixed>
-            <Box className={classes.outerCircle} onClick={handleClickOpen}>
+            <Box className={classes.outerCircle} onClick={() => handleClickOpen("job")}>
               <Typography variant="h5">大学</Typography>
             </Box>
           </Container>
         </Grid>
         <Grid item md={4} xs={6} className={classes.bottom}>
           <Container fixed>
-            <Box className={classes.outerCircle} onClick={handleClickOpen}>
+            <Box className={classes.outerCircle} onClick={() => handleClickOpen("hobby")}>
               <Typography variant="h5">趣味</Typography>
             </Box>
           </Container>
         </Grid>
         <Grid item md={4} xs={6} className={classes.center}>
           <Container fixed>
-            {/* <Box className={classes.outerCircle} onClick={handleClickOpen}>
+            {/* <Box className={classes.outerCircle} onClick={() => handleClickOpen}>
               <Typography variant="h5">趣味</Typography>
             </Box> */}
           </Container>
@@ -188,28 +222,28 @@ export default function Profile() {
         </Grid>
         <Grid item md={4} xs={6} className={classes.center}>
           <Container fixed>
-            {/* <Box className={classes.outerCircle} onClick={handleClickOpen}>
+            {/* <Box className={classes.outerCircle} onClick={() => handleClickOpen}>
               <Typography variant="h5">趣味</Typography>
             </Box> */}
           </Container>
         </Grid>
         <Grid item md={4} xs={6} className={classes.top}>
           <Container fixed>
-            <Box className={classes.outerCircle} onClick={handleClickOpen}>
+            <Box className={classes.outerCircle} onClick={() => handleClickOpen("")}>
               <Typography variant="h5">好きな食べ物</Typography>
             </Box>
           </Container>
         </Grid>
         <Grid item md={4} xs={6} className={classes.center}>
           <Container fixed>
-            <Box className={classes.outerCircle} onClick={handleClickOpen}>
+            <Box className={classes.outerCircle} onClick={() => handleClickOpen("")}>
               <Typography variant="h5">好きな曲</Typography>
             </Box>
           </Container>
         </Grid>
         <Grid item md={4} xs={12} className={classes.top}>
           <Container fixed>
-            <Box className={classes.outerCircle} onClick={handleClickOpen}>
+            <Box className={classes.outerCircle} onClick={() => handleClickOpen("talent")}>
               <Typography variant="h5">マイブーム</Typography>
             </Box>
           </Container>

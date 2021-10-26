@@ -33,7 +33,6 @@ import SettingIcon from "./image/icons8-settings-64.png";
 import { makeStyles } from "@mui/styles";
 
 import axios from "axios";
-import { isTemplateExpression } from "typescript";
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -120,8 +119,9 @@ function App() {
       })
       .then(
         (response) => {
-          console.log(response.data);
-          setData(response.data);
+          // console.log(response.data.filter((user) => user.name === "higu"));
+          // console.log(response.data);
+          setData(response.data.filter((user) => user.name === "higu"));
         }
       );
   }, []);
@@ -194,7 +194,7 @@ function App() {
                 selected={selectedIndex === 1}
                 onClick={(event) => handleListItemClick(event, 1)}
                 component={Link}
-                to="/profile"
+                to="/edit"
               >
                 <img src={EditIcon} alt="アイコン" width="40" height="40" />
                 追加・編集
@@ -222,27 +222,6 @@ function App() {
                 設定
               </ListItemButton>
             </List>
-            {/* <List>
-              {["新規追加", "友達", "マイページ"].map((text, index) => (
-                <ListItem button key={text}>
-                  <ListItemIcon>
-                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                  </ListItemIcon>
-                  <ListItemText primary={text} />
-                </ListItem>
-              ))}
-            </List>
-            <Divider />
-            <List>
-              {["設定", "その他"].map((text, index) => (
-                <ListItem button key={text}>
-                  <ListItemIcon>
-                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                  </ListItemIcon>
-                  <ListItemText primary={text} />
-                </ListItem>
-              ))}
-            </List> */}
           </Drawer>
           <Main open={open}>
             <DrawerHeader />
