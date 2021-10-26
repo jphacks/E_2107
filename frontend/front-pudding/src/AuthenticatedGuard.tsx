@@ -1,5 +1,5 @@
 import { useAuth } from "./store/useAuth";
-import { FC } from "react";
+import React, { FC } from "react";
 import { Redirect, useLocation } from "react-router-dom";
 
 const AuthenticatedGuard: FC = ({ children }) => {

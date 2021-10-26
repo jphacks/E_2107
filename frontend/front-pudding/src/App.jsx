@@ -9,11 +9,19 @@ import SignIn from "./page/SignIn";
 import Setting from "./page/Setting";
 import EditProfile from "./page/EditProfile";
 import FriendsList from "./page/FriendsList";
+import Auth from "./page/apitest"
+import LoggedIn from './page/apitestin';
+import LoggedOut from './page/apitestout';
+import Home from "./page/apitesthome";
 
 import Router from "./Router";
 
 import { Link } from "react-router-dom";
 
+// 認証系
+import { CookiesProvider, withCookies } from 'react-cookie';
+
+// mui
 import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
@@ -231,6 +239,18 @@ function App() {
             {/* <Route component={Page404} /> */}
             {/* <Router/> */}
             {/* </main> */}
+            <CookiesProvider>
+
+                <LoggedIn>
+                  <Route path="/" exact component={Home} />
+                  {/* <Route path="/post/:postId/" component={Post} />
+                  <Route path="/new" component={registerForm} /> */}
+                </LoggedIn>
+
+                <LoggedOut>
+                  <Route path="/auth" component={Auth} />
+                </LoggedOut>
+            </CookiesProvider>
           </Main>
         </Box>
       </Switch>

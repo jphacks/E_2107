@@ -1,5 +1,5 @@
 import { Route, Switch } from 'react-router-dom';
-import { VFC } from 'react';
+import React, { VFC } from 'react';
 import Profile from './page/Profile';
 import Setting from './page/Setting';
 
