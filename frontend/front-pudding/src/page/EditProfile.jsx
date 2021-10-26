@@ -24,10 +24,11 @@ import GreenImage from "../image/green.jpeg";
 import ColorImage from "../image/color.jpeg";
 
 import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 
 const drawerWidth = 240;
 
-const emails = [SkyImage, GreenImage, ColorImage];
+const backs = [SkyImage, GreenImage, ColorImage];
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -40,7 +41,8 @@ const useStyles = makeStyles((theme) => ({
     width: "100%", // Fix IE 11 issue.
   },
   submit: {
-    // margin: theme.spacing(3, 0, 2)
+    width: "250px",
+    height: "60px"
   },
   root: {
     display: "flex",
@@ -67,6 +69,10 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     flexGrow: 1,
+    display: "inline",
+    fontStyle: "Roboto",
+    fontSize: "30px",
+    m: "15px",
   },
   drawerPaper: {
     position: "relative",
@@ -94,7 +100,7 @@ const useStyles = makeStyles((theme) => ({
 export default function EditProfile() {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
-  const [selectedValue, setSelectedValue] = React.useState(emails[1]);
+  const [selectedValue, setSelectedValue] = React.useState(backs[0]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -121,7 +127,7 @@ export default function EditProfile() {
       <Dialog onClose={handleClose} open={open}>
         <DialogTitle>背景画像を選択</DialogTitle>
         <Stack direction="row" spacing={2}>
-          {emails.map((email) => (
+          {backs.map((email) => (
             <ListItem
               button
               onClick={() => handleListItemClick(email)}
@@ -137,12 +143,12 @@ export default function EditProfile() {
 
   return (
     <Container component="main" maxWidth="xl" className={classes.container}>
-      <Box display="inline" fontStyle="Roboto" fontSize="24px" m="15px">
-        編集
+      <Box m={1}>
+        <Typography variant="h4">追加・編集</Typography>
       </Box>
       <CssBaseline />
       <form className={classes.form} noValidate>
-        <Grid container spacing={2}>
+        <Grid container spacing={1}>
           <Grid item xs={12} sm={7}>
             <TableContainer component={Paper}>
               <TableBody>
@@ -314,35 +320,6 @@ export default function EditProfile() {
                     </Box>
                   </TableCell>
                 </TableRow>
-                {/* <TableRow>
-                  <TableCell width="270px">
-                    <Box
-                      display="inline"
-                      lineHeight="50px"
-                      fontStyle="Roboto"
-                      fontSize="18px"
-                      m="15px"
-                    >
-                      メールアドレス（ログイン用）
-                    </Box>
-                  </TableCell>
-                  <TableCell width="650px">
-                    <Box display="inline" lineHeight="50px">
-                      <Grid item xs={12} sm={11}>
-                        <TextField
-                          variant="outlined"
-                          required
-                          fullWidth
-                          id="emailLogin"
-                          label="Email Address"
-                          name="emailLogin"
-                          autoComplete="email"
-                          //error
-                        />
-                      </Grid>
-                    </Box>
-                  </TableCell>
-                </TableRow> */}
                 <TableRow>
                   <SelectDialog
                     selectedValue={selectedValue}
@@ -382,14 +359,6 @@ export default function EditProfile() {
                           onClick={handleClickOpen}
                         >
                           画像を選択
-                          {/* <input
-                            accept="image/*"
-                            style={{ display: "none" }}
-                            id="raised-button-file"
-                            multiple
-                            type="file"
-                            className={classes.inputFileBtnHide}
-                          /> */}
                         </Button>
                       </Grid>
                     </Grid>
@@ -403,7 +372,6 @@ export default function EditProfile() {
             <TableContainer component={Paper}>
               <Box
                 sx={{
-                  // marginTop: 8,
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
@@ -415,15 +383,29 @@ export default function EditProfile() {
                   src={HiguIcon}
                   sx={{ width: 130, height: 130, marginBottom: 3 }}
                 />
+                <Button variant="contained" color="inherit" component="label">
+                  アイコン画像を選択
+                  <input
+                    accept="image/*"
+                    style={{ display: "none" }}
+                    id="raised-button-file"
+                    multiple
+                    type="file"
+                    className={classes.inputFileBtnHide}
+                  />
+                </Button>
+                <Box m={4}>
                 <Button
                   type="submit"
                   variant="contained"
                   color="primary"
                   className={classes.submit}
-                  fullWidth
                 >
+                    <Typography variant="h5">
                   保存する
+                  </Typography>
                 </Button>
+                </Box>
               </Box>
             </TableContainer>
           </Grid>

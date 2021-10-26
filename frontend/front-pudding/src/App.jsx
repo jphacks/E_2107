@@ -38,6 +38,7 @@ const useStyles = makeStyles((theme) => ({
   title: {
     flexGrow: 1,
     textAlign: "center",
+    color:"#555555"
   },
 }));
 
@@ -46,7 +47,6 @@ const drawerWidth = 180;
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({
     flexGrow: 1,
-    padding: theme.spacing(3),
     transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
@@ -144,13 +144,13 @@ function App() {
               </IconButton>
               {data.map((item) => (
                 <Typography
-                  variant="h4"
+                  variant="h3"
                   noWrap
                   component="div"
                   className={classes.title}
                   key={item.id}
                 >
-                  プリン{item.name}
+                  PUDDING
                 </Typography>
               ))}
             </Toolbar>
