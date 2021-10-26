@@ -18,6 +18,10 @@ import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 
+import SkyImage from "../image/sky.jpeg";
+import GreenImage from "../image/green.jpeg";
+import ColorImage from "../image/color.jpeg";
+
 const useStyles = makeStyles((theme) => ({
   container: {
     flexGrow: 1,
@@ -144,9 +148,10 @@ export default function Profile() {
       });
   }, []);
 
+
   return (
     <div>
-      <Grid container spacing={0} className={classes.container}>
+      <Grid container spacing={0} className={classes.container} sx={{backgroundImage:`url(${SkyImage})`}}>
         <SimpleDialog
           selectedValue={selectedValue}
           open={open}
