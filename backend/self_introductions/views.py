@@ -1,12 +1,10 @@
 from .serializers import UserSerializer, UserMiniSerializer
 from .models import User, Follow
 from rest_framework.decorators import action
-from rest_framework import viewsets, generics, filters, status, permissions
+from rest_framework import viewsets, filters, status, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from rest_framework import permissions, status
-from rest_framework import generics, viewsets
 from django.http import HttpResponseRedirect
 from .serializers import ProfileSerializer, UserSerializer
 from .models import Profile
@@ -19,8 +17,8 @@ from .models import Profile
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializer
 
     # lookup_field = 'name' # pk以外で検索したい場合
 
