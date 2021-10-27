@@ -15,7 +15,20 @@ import Paper from "@mui/material/Paper";
 import Avatar from "@mui/material/Avatar";
 import HiguIcon from "../image/higuSample.jpg";
 
+import DialogTitle from "@mui/material/DialogTitle";
+import Dialog from "@mui/material/Dialog";
+import ListItem from "@mui/material/ListItem";
+
+import SkyImage from "../image/sky.jpeg";
+import GreenImage from "../image/green.jpeg";
+import ColorImage from "../image/color.jpeg";
+
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
+
 const drawerWidth = 240;
+
+const backs = [SkyImage, GreenImage, ColorImage];
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -24,16 +37,12 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     alignItems: "center",
   },
-  avatar: {
-    // margin: theme.spacing(1),
-    // backgroundColor: theme.palette.secondary.main
-  },
   form: {
     width: "100%", // Fix IE 11 issue.
-    // marginTop: theme.spacing(3)
   },
   submit: {
-    // margin: theme.spacing(3, 0, 2)
+    width: "250px",
+    height: "60px"
   },
   root: {
     display: "flex",
@@ -48,20 +57,9 @@ const useStyles = makeStyles((theme) => ({
     padding: "0 8px",
     // ...theme.mixins.toolbar
   },
-  appBar: {
-    // zIndex: theme.zIndex.drawer + 1,
-    // transition: theme.transitions.create(['width', 'margin'], {
-    //     easing: theme.transitions.easing.sharp,
-    //     duration: theme.transitions.duration.leavingScreen
-    // })
-  },
   appBarShift: {
     marginLeft: drawerWidth,
     width: `calc(100% - ${drawerWidth}px)`,
-    // transition: theme.transitions.create(['width', 'margin'], {
-    //     easing: theme.transitions.easing.sharp,
-    //     duration: theme.transitions.duration.enteringScreen
-    // })
   },
   menuButton: {
     marginRight: 36,
@@ -71,36 +69,23 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     flexGrow: 1,
+    display: "inline",
+    fontStyle: "Roboto",
+    fontSize: "30px",
+    m: "15px",
   },
   drawerPaper: {
     position: "relative",
     whiteSpace: "nowrap",
     width: drawerWidth,
-    // transition: theme.transitions.create('width', {
-    //     easing: theme.transitions.easing.sharp,
-    //     duration: theme.transitions.duration.enteringScreen
-    // })
   },
   drawerPaperClose: {
     overflowX: "hidden",
-    // transition: theme.transitions.create('width', {
-    //     easing: theme.transitions.easing.sharp,
-    //     duration: theme.transitions.duration.leavingScreen
-    // }),
-    // width: theme.spacing(7),
-    // [theme.breakpoints.up('sm')]: {
-    //     width: theme.spacing(9)
-    // }
   },
-  // appBarSpacer: theme.mixins.toolbar,
   content: {
     flexGrow: 1,
     height: "100vh",
     overflow: "auto",
-  },
-  container: {
-    // paddingTop: theme.spacing(4),
-    // paddingBottom: theme.spacing(4)
   },
   fixedHeight: {
     height: 240,
@@ -114,14 +99,56 @@ const useStyles = makeStyles((theme) => ({
 
 export default function EditProfile() {
   const classes = useStyles();
+  const [open, setOpen] = React.useState(false);
+  const [selectedValue, setSelectedValue] = React.useState(backs[0]);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = (value) => {
+    setOpen(false);
+    setSelectedValue(value);
+  };
+
+  const SelectDialog = (props) => {
+    const { onClose, selectedValue, open } = props;
+
+    const handleClose = () => {
+      onClose(selectedValue);
+    };
+
+    const handleListItemClick = (value) => {
+      onClose(value);
+      console.log(value);
+    };
+
+    return (
+      <Dialog onClose={handleClose} open={open}>
+        <DialogTitle>背景画像を選択</DialogTitle>
+        <Stack direction="row" spacing={2}>
+          {backs.map((email) => (
+            <ListItem
+              button
+              onClick={() => handleListItemClick(email)}
+              key={email}
+            >
+              <img src={email} height={100} width={100} alt="サンプル画像" />
+            </ListItem>
+          ))}
+        </Stack>
+      </Dialog>
+    );
+  };
+
   return (
     <Container component="main" maxWidth="xl" className={classes.container}>
-      <Box display="inline" fontStyle="Roboto" fontSize="24px" m="15px">
-        編集
+      <Box m={1}>
+        <Typography variant="h4">追加・編集</Typography>
       </Box>
       <CssBaseline />
       <form className={classes.form} noValidate>
-        <Grid container spacing={2}>
+        <Grid container spacing={1}>
           <Grid item xs={12} sm={7}>
             <TableContainer component={Paper}>
               <TableBody>
@@ -153,35 +180,6 @@ export default function EditProfile() {
                     </Box>
                   </TableCell>
                 </TableRow>
-                {/* <TableRow>
-                                        <TableCell width="270px">
-                                            <Box
-                                                display="inline"
-                                                lineHeight="50px"
-                                                fontStyle="Roboto"
-                                                fontSize="18px"
-                                                m="15px">
-                                                自己紹介
-                                            </Box>
-                                        </TableCell>
-                                        <TableCell width="650px">
-                                            <Box display="inline" lineHeight="50px">
-                                                <Grid item xs={12} sm={10}>
-                                                    <TextField
-                                                        autoComplete="selfIntroduction"
-                                                        name="Self"
-                                                        variant="outlined"
-                                                        required
-                                                        fullWidth
-                                                        id="Self"
-                                                        label="自己紹介"
-                                                        multiline
-                                                        rows={5}
-                                                    />
-                                                </Grid>
-                                            </Box>
-                                        </TableCell>
-                                    </TableRow> */}
                 <TableRow>
                   <TableCell width="270px">
                     <Box
@@ -322,63 +320,12 @@ export default function EditProfile() {
                     </Box>
                   </TableCell>
                 </TableRow>
-                {/* <TableRow>
-                  <TableCell width="270px">
-                    <Box
-                      display="inline"
-                      lineHeight="50px"
-                      fontStyle="Roboto"
-                      fontSize="18px"
-                      m="15px"
-                    >
-                      メールアドレス（ログイン用）
-                    </Box>
-                  </TableCell>
-                  <TableCell width="650px">
-                    <Box display="inline" lineHeight="50px">
-                      <Grid item xs={12} sm={11}>
-                        <TextField
-                          variant="outlined"
-                          required
-                          fullWidth
-                          id="emailLogin"
-                          label="Email Address"
-                          name="emailLogin"
-                          autoComplete="email"
-                          //error
-                        />
-                      </Grid>
-                    </Box>
-                  </TableCell>
-                </TableRow> */}
-                {/* <TableRow>
-                                        <TableCell width="270px">
-                                            <Box
-                                                display="inline"
-                                                lineHeight="50px"
-                                                fontStyle="Roboto"
-                                                fontSize="18px"
-                                                m="15px">
-                                                メールアドレス(連絡用）
-                                            </Box>
-                                        </TableCell>
-                                        <TableCell width="650px">
-                                            <Box display="inline" lineHeight="50px">
-                                                <Grid item xs={12} sm={7}>
-                                                    <TextField
-                                                        variant="outlined"
-                                                        required
-                                                        fullWidth
-                                                        id="emailContact"
-                                                        label="Email Address"
-                                                        name="emailContact"
-                                                        autoComplete="email"
-                                                    />
-                                                </Grid>
-                                            </Box>
-                                        </TableCell>
-                                    </TableRow> */}
-                {/* <TableRow>
+                <TableRow>
+                  <SelectDialog
+                    selectedValue={selectedValue}
+                    open={open}
+                    onClose={handleClose}
+                  />
                   <TableCell width="270px">
                     <Box
                       display="inline"
@@ -386,7 +333,7 @@ export default function EditProfile() {
                       fontSize="18px"
                       m="15px"
                     >
-                      画像
+                      背景画像
                     </Box>
                   </TableCell>
                   <TableCell>
@@ -398,7 +345,7 @@ export default function EditProfile() {
                     >
                       <Grid item xs={12} sm={5}>
                         <img
-                          src={InstaIcon}
+                          src={selectedValue}
                           height={100}
                           width={100}
                           alt="サンプル画像"
@@ -409,50 +356,56 @@ export default function EditProfile() {
                           variant="contained"
                           color="inherit"
                           component="label"
+                          onClick={handleClickOpen}
                         >
                           画像を選択
-                          <input
-                            accept="image/*"
-                            style={{ display: "none" }}
-                            id="raised-button-file"
-                            multiple
-                            type="file"
-                            className={classes.inputFileBtnHide}
-                          />
                         </Button>
                       </Grid>
                     </Grid>
                   </TableCell>
-                </TableRow> */}
+                </TableRow>
               </TableBody>
             </TableContainer>
           </Grid>
 
           <Grid item xs={12} sm={5}>
             <TableContainer component={Paper}>
-            <Box
-              sx={{
-                // marginTop: 8,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-              m="15px"
-            >
-            <Avatar
-                alt="UserIcon"
-                src={HiguIcon}
-                sx={{ width: 130, height: 130, marginBottom: 3 }}
-              />
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
+                m="15px"
+              >
+                <Avatar
+                  alt="UserIcon"
+                  src={HiguIcon}
+                  sx={{ width: 130, height: 130, marginBottom: 3 }}
+                />
+                <Button variant="contained" color="inherit" component="label">
+                  アイコン画像を選択
+                  <input
+                    accept="image/*"
+                    style={{ display: "none" }}
+                    id="raised-button-file"
+                    multiple
+                    type="file"
+                    className={classes.inputFileBtnHide}
+                  />
+                </Button>
+                <Box m={4}>
                 <Button
                   type="submit"
                   variant="contained"
                   color="primary"
                   className={classes.submit}
-                  fullWidth
                 >
+                    <Typography variant="h5">
                   保存する
+                  </Typography>
                 </Button>
+                </Box>
               </Box>
             </TableContainer>
           </Grid>
