@@ -2,13 +2,8 @@ import React, { useState, useEffect } from "react";
 import "./App.css";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 
-import TopPage from "./page/TopPage";
-import SignUp from "./page/SignUp";
-import Profile from "./page/Profile";
-import SignIn from "./page/SignIn";
-import Setting from "./page/Setting";
-import EditProfile from "./page/EditProfile";
-import FriendsList from "./page/FriendsList";
+import Router from "./Router";
+import { useAuth } from "./store/useAuth";
 
 import { Link } from "react-router-dom";
 
@@ -38,15 +33,15 @@ const useStyles = makeStyles((theme) => ({
   title: {
     flexGrow: 1,
     textAlign: "center",
+    color: "#555555",
   },
 }));
 
-const drawerWidth = 180;
+const drawerWidth = 170;
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({
     flexGrow: 1,
-    padding: theme.spacing(3),
     transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
@@ -95,6 +90,7 @@ function App() {
   const [open, setOpen] = React.useState(false);
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   const classes = useStyles();
+  const isAuthenticated = useAuth();
 
   const handleListItemClick = (event, index) => {
     setSelectedIndex(index);
@@ -117,13 +113,11 @@ function App() {
           "Content-Type": "application/json",
         },
       })
-      .then(
-        (response) => {
-          // console.log(response.data.filter((user) => user.name === "higu"));
-          // console.log(response.data);
-          setData(response.data.filter((user) => user.name === "higu"));
-        }
-      );
+      .then((response) => {
+        // console.log(response.data.filter((user) => user.name === "higu"));
+        // console.log(response.data);
+        setData(response.data.filter((user) => user.name === "higu"));
+      });
   }, []);
 
   return (
@@ -144,13 +138,13 @@ function App() {
               </IconButton>
               {data.map((item) => (
                 <Typography
-                  variant="h4"
+                  variant="h3"
                   noWrap
                   component="div"
                   className={classes.title}
                   key={item.id}
                 >
-                  プリン{item.name}
+                  PUDDING
                 </Typography>
               ))}
             </Toolbar>
@@ -178,66 +172,84 @@ function App() {
               </IconButton>
             </DrawerHeader>
             <Divider />
-            <List>
-              <ListItemButton
-                selected={selectedIndex === 0}
-                onClick={(event) => handleListItemClick(event, 0)}
-                component={Link}
-                to="/profile"
-              >
-                <img src={UserIcon} alt="アイコン" width="40" height="40" />
-                マイページ
-              </ListItemButton>
-            </List>
-            <List>
-              <ListItemButton
-                selected={selectedIndex === 1}
-                onClick={(event) => handleListItemClick(event, 1)}
-                component={Link}
-                to="/edit"
-              >
-                <img src={EditIcon} alt="アイコン" width="40" height="40" />
-                追加・編集
-              </ListItemButton>
-            </List>
-            <List>
-              <ListItemButton
-                selected={selectedIndex === 2}
-                onClick={(event) => handleListItemClick(event, 2)}
-                component={Link}
-                to="/friends"
-              >
-                <img src={FriendsIcon} alt="アイコン" width="40" height="40" />
-                友達
-              </ListItemButton>
-            </List>
-            <List>
-              <ListItemButton
-                selected={selectedIndex === 3}
-                onClick={(event) => handleListItemClick(event, 3)}
-                component={Link}
-                to="/setting"
-              >
-                <img src={SettingIcon} alt="アイコン" width="40" height="40" />
-                設定
-              </ListItemButton>
-            </List>
+            {isAuthenticated ? (
+              <div>
+                <List>
+                  <ListItemButton
+                    selected={selectedIndex === 0}
+                    onClick={(event) => handleListItemClick(event, 0)}
+                    component={Link}
+                    to="/profile/1"
+                  >
+                    <img src={UserIcon} alt="アイコン" width="40" height="40" />
+                    マイページ
+                  </ListItemButton>
+                </List>
+                <List>
+                  <ListItemButton
+                    selected={selectedIndex === 1}
+                    onClick={(event) => handleListItemClick(event, 1)}
+                    component={Link}
+                    to="/edit"
+                  >
+                    <img src={EditIcon} alt="アイコン" width="40" height="40" />
+                    追加・編集
+                  </ListItemButton>
+                </List>
+                <List>
+                  <ListItemButton
+                    selected={selectedIndex === 2}
+                    onClick={(event) => handleListItemClick(event, 2)}
+                    component={Link}
+                    to="/friends"
+                  >
+                    <img
+                      src={FriendsIcon}
+                      alt="アイコン"
+                      width="40"
+                      height="40"
+                    />
+                    友達
+                  </ListItemButton>
+                </List>
+                <List>
+                  <ListItemButton
+                    selected={selectedIndex === 3}
+                    onClick={(event) => handleListItemClick(event, 3)}
+                    component={Link}
+                    to="/setting"
+                  >
+                    <img
+                      src={SettingIcon}
+                      alt="アイコン"
+                      width="40"
+                      height="40"
+                    />
+                    設定
+                  </ListItemButton>
+                </List>
+              </div>
+            ) : (
+              <List>
+                  <ListItemButton
+                    component={Link}
+                    to="/signin"
+                  >
+                    {/* <img
+                      src={SettingIcon}
+                      alt="アイコン"
+                      width="40"
+                      height="40"
+                    /> */}
+                    ログインしてから利用できます
+                  </ListItemButton>
+                </List>
+            )}
           </Drawer>
           <Main open={open}>
             <DrawerHeader />
-
-            {/* <SideBar /> */}
-            {/* <main className="c-main"> */}
-            <Route exact path="/" component={TopPage} />
-            <Route exact path="/signup" component={SignUp} />
-            <Route exact path="/signin" component={SignIn} />
-            <Route exact path="/profile" component={Profile} />
-            <Route exact path="/setting" component={Setting} />
-            <Route exact path="/edit" component={EditProfile} />
-            <Route exact path="/friends" component={FriendsList} />
             {/* <Route component={Page404} /> */}
-            {/* <Router/> */}
-            {/* </main> */}
+            <Router />
           </Main>
         </Box>
       </Switch>
