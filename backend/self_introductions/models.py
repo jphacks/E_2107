@@ -19,8 +19,16 @@ class User(models.Model):
         return self.name
 
     # フォローしている人を取得する関数を定義 
+    # TODO フォロー関係ではなく、フォロー関係の「ユーザ」を返したい (文法があっているか不安)
     def get_followings(self):
-        return Follow.objects.filter(owner=self.id)
+        relations = Follow.objects.filter(owner=self.id)
+        relations_target_id = []
+        for obj in relations:
+            relations_target_id.append(obj.get_follow_target())
+
+        followings = User.objects.filter(id__in=relations_target_id)
+
+        return followings
 
     #フォロー人数を表示するfollow関数を定義
     def get_followings_nums(self):
@@ -47,7 +55,14 @@ class Follow(models.Model):
         User,
         on_delete=models.CASCADE,
         related_name = 'accept_follow_user'
-    ) 
+    )
+
+    def get_owner(self):
+        return self.owner
+    
+    def get_follow_target(self):
+        return self.follow_target
+
 
 #いいねテーブルを定義(必要になったら使う? )
 # class Like(models.Model):

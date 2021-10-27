@@ -21,8 +21,14 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
 
     # lookup_field = 'name' # pk以外で検索したい場合
-
-    def follow(self, request):
+    
+    # @action(detail=True)
+    # def test():
+    #     pass
+    
+    # 多分OK?
+    @action(detail=True)
+    def follow(self, request, pk):
         owner = request.user
         follow_target = self.get_object()
 
@@ -36,8 +42,9 @@ class UserViewSet(viewsets.ModelViewSet):
         else:
             return Response({'errors': ['You already follow']}, status=status.HTTP_400_BAD_REQUEST)
 
-    
-    def unfollow(self, request):
+    # 多分OK?
+    @action(detail=True)
+    def unfollow(self, request, pk):
         owner = request.user
         follow_target = self.get_object()
 
@@ -52,15 +59,18 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
     # フォローしている人を取得
-    def followings(self, request):
+    # TODO 分からない
+    @action(detail=True)
+    def followings(self, request, pk):
         users = self.get_object().get_followings()
         serializer = UserMiniSerializer(users, many=True, context={'request': request})
 
         return Response(serializer.data)
 
-    # フォロワーを取得(使う予定はないかも)
-    def followers(self, request):
-        users = self.get_object().get_followers()
-        serializer = UserMiniSerializer(users, many=True, context={'request': request})
+    # フォロワーを取得(使う予定はないかも) 
+    # @action(detail=True)
+    # def followers(self, request, pk):
+    #     users = self.get_object().get_followers()
+    #     serializer = UserMiniSerializer(users, many=True, context={'request': request})
 
-        return Response(serializer.data)
+    #     return Response(serializer.data)
