@@ -5,6 +5,9 @@ import EditProfile from "./page/EditProfile";
 import FriendsList from "./page/FriendsList";
 
 const Auth = () => {
+  // const path = window.location.pathname;
+  // const uid = path.split("/profile/")[1];
+  // console.log(uid);
   return (
     <Switch>
       <Route exact path="/" component={Profile} />
@@ -20,7 +23,7 @@ const Auth = () => {
           pathname: "/",
         }}
       />
-      <Route exact path="/profile" component={Profile} />
+      <Route exact path="/profile/:id" component={Profile} />
       <Route exact path="/setting" component={Setting} />
       <Route exact path="/edit" component={EditProfile} />
       <Route exact path="/friends" component={FriendsList} />

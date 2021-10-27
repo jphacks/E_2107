@@ -129,6 +129,10 @@ export default function Profile() {
   const [selectedValue, setSelectedValue] = React.useState(emails[1]);
   const [category, setCategory] = useState("");
 
+  const path = window.location.pathname;
+  const uid = path.split("/profile/")[1];
+  console.log(uid);
+
   const handleClickOpen = (props) => {
     setCategory(props);
     setOpen(true);
@@ -140,6 +144,7 @@ export default function Profile() {
   };
 
   const [data, setData] = useState([]);
+  const [userData, setUserData] = useState();
   // const { id } = useParams();
 
   useEffect(() => {
@@ -151,11 +156,19 @@ export default function Profile() {
       })
       .then((response) => {
         // console.log(response.data.filter((user) => user.name === "higu"));
-        console.log(response.data);
+        console.log(response.data.filter((user) => user.id == uid));
+        // console.log(response.data);
         //一つしか入れてない
-        setData(...response.data);
+        setData(...response.data.filter((user) => user.id == uid));
       });
   }, []);
+
+  console.log(data.id);
+  // setUserData(...data);
+
+  // const userData = data
+
+  // console.log(userData[0]);
 
   return (
     <Grid

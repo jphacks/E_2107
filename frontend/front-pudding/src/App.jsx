@@ -179,7 +179,7 @@ function App() {
                     selected={selectedIndex === 0}
                     onClick={(event) => handleListItemClick(event, 0)}
                     component={Link}
-                    to="/profile"
+                    to="/profile/1"
                   >
                     <img src={UserIcon} alt="アイコン" width="40" height="40" />
                     マイページ
