@@ -14,12 +14,13 @@ import LoggedIn from './page/apitestin';
 import LoggedOut from './page/apitestout';
 import Home from "./page/apitesthome";
 
-import Router from "./Router";
+// import Router from "./Router";
 
 import { Link } from "react-router-dom";
 
 // 認証系
-import { CookiesProvider, withCookies } from 'react-cookie';
+import { CookiesProvider, } from 'react-cookie';
+// WithCookie
 
 // mui
 import { styled, useTheme } from "@mui/material/styles";
@@ -33,11 +34,11 @@ import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import ListItem from "@mui/material/ListItem";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
+// import ListItem from "@mui/material/ListItem";
+// import ListItemIcon from "@mui/material/ListItemIcon";
+// import ListItemText from "@mui/material/ListItemText";
 import MuiAppBar from "@mui/material/AppBar";
-import Button from "@mui/material/Button";
+// import Button from "@mui/material/Button";
 import ListItemButton from "@mui/material/ListItemButton";
 import MenuIcon from './image/icons8-four-squares-64.png';
 import UserIcon from './image/icons8-female-profile-64.png';
