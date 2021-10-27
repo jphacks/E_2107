@@ -1,4 +1,5 @@
 import React, { useReducer, useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 
 // firebase
 import { useAuth } from "../contexts/AuthContext";
@@ -88,18 +89,22 @@ const reducer = (state: State, action: Action): State => {
   }
 };
 
+// コンポーネント定義
 export default function SignUp() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const { signup } = useAuth();
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const { register, handleSubmit, errors, trigger } = useForm();
 
   useEffect(() => {
-    if (
-      state.email.trim() &&
-      state.password.trim() &&
-      state.passwordconfirm.trim()
-    ) {
+    if (state.password.trim() !== state.passwordconfirm.trim()) {
+      //clearErrors()
+      dispatch({
+        type: "setIsButtonDisabled",
+        payload: true
+      });
+    } else if (state.email.trim() && state.password.trim()) {
       dispatch({
         type: "setIsButtonDisabled",
         payload: false
@@ -112,8 +117,7 @@ export default function SignUp() {
     }
   }, [state.email, state.password, state.passwordconfirm]);
 
-  async function handleSignup(event:any) {
-    event.preventDefault();
+  async function handleSignup(data:any) {
     try {
       setError("");
       setSuccessMessage("");
@@ -172,9 +176,21 @@ export default function SignUp() {
 
   const handleKeyPress = (event: React.KeyboardEvent) => {
     if (event.keyCode === 13 || event.which === 13) {
-      state.isButtonDisabled || handleSignup(event);
+      if (!state.isButtonDisabled) {
+        handleKeyPresstrigger();
+        if (errors) {
+          //errorメッセージを表示する
+        } else {
+          handleSignup(event);
+        }
+      }
     }
   };
+
+  async function handleKeyPresstrigger() {
+    const result = await trigger();
+    return result;
+  }
 
   const handleEmailChange: React.ChangeEventHandler<HTMLInputElement> = (
     event
@@ -230,8 +246,8 @@ export default function SignUp() {
           <Typography component="h1" variant="h5" sx={{fontSize: 38}}>
             Sign upしてはじめる！
           </Typography>
-          {/* {error && <Box variant="danger"　sx={{}}>{error}</Box>}
-          {successMessage && <Box variant="danger" sx={{}}>{successMessage}</Box>} */}
+          {error && <div variant="danger"　sx={{}}>{error}</div>}
+          {successMessage && <div variant="danger" sx={{}}>{successMessage}</div>}
           <Box component="form" noValidate sx={{ mt: 5 }}>
             <Grid container spacing={2}>
               {/* <Grid item xs={12}>
@@ -255,7 +271,15 @@ export default function SignUp() {
                   autoComplete="email"
                   onChange={handleEmailChange}
                   onKeyPress={handleKeyPress}
+                  inputRef={register({
+                    pattern: /^[A-Za-z0-9]{1}[A-Za-z0-9_.-]*@{1}[A-Za-z0-9_.-]{1,}\.[A-Za-z0-9]{1,}$/
+                  })}
                 />
+                {errors.email?.type === "pattern" && (
+                  <div style={{ color: "red" }}>
+                    メールアドレスの形式で入力されていません
+                  </div>
+                )}
               </Grid>
               <Grid item xs={12}>
                 <TextField
@@ -270,6 +294,11 @@ export default function SignUp() {
                   onChange={handlePasswordChange}
                   onKeyPress={handleKeyPress}
                 />
+                {errors.password?.type === "minLength" && (
+                  <div style={{ color: "red" }}>
+                    パスワードは6文字以上で入力してください
+                  </div>
+                )}
               </Grid>
               <Grid item xs={12}>
                 <TextField
@@ -292,7 +321,7 @@ export default function SignUp() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
-              onClick={handleSignup}
+              onClick={handleSubmit(handleSignup)}
               disabled={state.isButtonDisabled}
             >
               Sign Up
