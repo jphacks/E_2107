@@ -25,6 +25,7 @@ const Auth = (props) => {
 
     const postUri = loginFunction ? `${API_BASE_URL}/token_auth/` : `${API_BASE_URL}/self_introductions/`;
 
+    // APIを叩く
     axios.post(postUri, form_data, {
         headers: {
             'Content-Type': 'application/json'
@@ -67,10 +68,12 @@ const Auth = (props) => {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="パスワード" />
           { errorMessage.password ? <p className="red">{errorMessage.password}</p> : null }
-          </div>
+        </div>
+
         <div className="form-element right-placement">
           <Button variant="contained" color="primary" type="submit" >{loginFunction ? 'ログイン' : 'サインイン'} </Button>
         </div>
+        {/* ログアウトした時の挙動 */}
         <div className="center-placement">
           <Button variant="contained" type="button" onClick={changeFunction}>{loginFunction ? 'アカウントを作成する' : 'ログインする'} </Button>
         </div>
