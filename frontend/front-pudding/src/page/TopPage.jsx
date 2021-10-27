@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import Button from "@mui/material/Button";
 import { makeStyles } from '@mui/styles';
 
+import { firebaseFirestore } from '../config/firebase';
+
 const useStyles = makeStyles(theme => ({
   container: {
     flexGrow: 1,
