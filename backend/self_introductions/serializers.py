@@ -8,6 +8,41 @@ from rest_framework_jwt.settings import api_settings
 
 # 認証系
 
+class UserMiniSerializer(serializers.ModelSerializer):
+    # followings_count = serializers.SerializerMethodField()
+    # followers_count = serializers.SerializerMethodField()
+    # is_following = serializers.SerializerMethodField()
+    class Meta:
+        fields = (
+            'id',
+            'hobby',
+            'talent',
+            'born',
+            'job',
+            'twitter',
+            'instagram',
+            'facebook',
+            'followings_count',
+            'followers_count',
+            # 'is_following',
+        )
+        model = User
+
+    def get_followings_nums(self, obj):
+        return obj.get_followings_nums()
+
+    def get_followers_nums(self, obj):
+        return obj.get_followers_nums()
+
+    def get_is_following(self, obj):
+        user = self.context['request'].user
+
+        return obj in user.get_followings()
+        # if user.is_authenticated:
+        #     return obj in user.get_followings()
+        # else:
+        #     return False
+
 
 class UserSerializer(serializers.ModelSerializer):
 
@@ -34,8 +69,8 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('token', 'username', 'password')
 
-
 # serializers
+
 
 class ProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer()

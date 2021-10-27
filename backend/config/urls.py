@@ -8,10 +8,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     # api
-    path('self_introductions/', include('self_introductions.urls')),
+    path('api/', include('self_introductions.urls')),
 
     # 認証系
     path('token-auth/', obtain_jwt_token),
     path('token-verify/', verify_jwt_token),
     path('token-refresh/', refresh_jwt_token),
-]
