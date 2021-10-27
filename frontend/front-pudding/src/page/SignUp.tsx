@@ -34,31 +34,20 @@ export default function SignUp() {
             alignItems: 'center',
           }}
         >
-          <Typography component="h1" variant="h5" sx={{fontSize: 50}}>
-            Sign up
+          <Typography component="h1" variant="h5" sx={{fontSize: 38}}>
+            Sign upしてはじめる！
           </Typography>
           <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 5 }}>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                {/* フォーム */}
+              <Grid item xs={12}>
                 <TextField
                   autoComplete="given-name"
                   name="firstName"
                   required
                   fullWidth
                   id="firstName"
-                  label="First Name"
+                  label="氏名"
                   autoFocus
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  required
-                  fullWidth
-                  id="lastName"
-                  label="Last Name"
-                  name="lastName"
-                  autoComplete="family-name"
                 />
               </Grid>
               <Grid item xs={12}>
@@ -66,7 +55,7 @@ export default function SignUp() {
                   required
                   fullWidth
                   id="email"
-                  label="Email Address"
+                  label="メールアドレス"
                   name="email"
                   autoComplete="email"
                 />
@@ -76,7 +65,7 @@ export default function SignUp() {
                   required
                   fullWidth
                   name="password"
-                  label="Password"
+                  label="パスワード"
                   type="password"
                   id="password"
                   autoComplete="new-password"

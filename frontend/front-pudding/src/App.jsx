@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 
@@ -14,7 +14,8 @@ import LoggedIn from './page/apitestin';
 import LoggedOut from './page/apitestout';
 import Home from "./page/apitesthome";
 
-// import Router from "./Router";
+import Router from "./Router";
+import { useAuth } from "./store/useAuth";
 
 import { Link } from "react-router-dom";
 
@@ -40,26 +41,28 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import MuiAppBar from "@mui/material/AppBar";
 // import Button from "@mui/material/Button";
 import ListItemButton from "@mui/material/ListItemButton";
-import MenuIcon from './image/icons8-four-squares-64.png';
-import UserIcon from './image/icons8-female-profile-64.png';
-import EditIcon from './image/icons8-edit-64.png';
-import FriendsIcon from './image/icons8-conference-64.png';
-import SettingIcon from './image/icons8-settings-64.png';
-import { makeStyles } from '@mui/styles';
+import MenuIcon from "./image/icons8-four-squares-64.png";
+import UserIcon from "./image/icons8-female-profile-64.png";
+import EditIcon from "./image/icons8-edit-64.png";
+import FriendsIcon from "./image/icons8-conference-64.png";
+import SettingIcon from "./image/icons8-settings-64.png";
+import { makeStyles } from "@mui/styles";
 
-const useStyles = makeStyles(theme => ({
+import axios from "axios";
+
+const useStyles = makeStyles((theme) => ({
   title: {
     flexGrow: 1,
-    textAlign: 'center',
+    textAlign: "center",
+    color: "#555555",
   },
 }));
 
-const drawerWidth = 180;
+const drawerWidth = 170;
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({
     flexGrow: 1,
-    padding: theme.spacing(3),
     transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
@@ -78,11 +81,13 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
 })(({ theme, open }) => ({
+  height: 64,
   transition: theme.transitions.create(["margin", "width"], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
   ...(open && {
+    height: 64,
     width: `calc(100% - ${drawerWidth}px)`,
     marginLeft: `${drawerWidth}px`,
     transition: theme.transitions.create(["margin", "width"], {
@@ -106,6 +111,7 @@ function App() {
   const [open, setOpen] = React.useState(false);
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   const classes = useStyles();
+  const isAuthenticated = useAuth();
 
   const handleListItemClick = (event, index) => {
     setSelectedIndex(index);
@@ -118,6 +124,22 @@ function App() {
   const handleDrawerClose = () => {
     setOpen(false);
   };
+
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get(`http://localhost:8000/self_introductions/`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => {
+        // console.log(response.data.filter((user) => user.name === "higu"));
+        // console.log(response.data);
+        setData(response.data.filter((user) => user.name === "higu"));
+      });
+  }, []);
 
   return (
     <BrowserRouter>
@@ -133,11 +155,19 @@ function App() {
                 edge="start"
                 sx={{ mr: 2, ...(open && { display: "none" }) }}
               >
-                <img src={MenuIcon}  alt="アイコン" width="40" height="40"/>
+                <img src={MenuIcon} alt="アイコン" width="40" height="40" />
               </IconButton>
-              <Typography variant="h4" noWrap component="div" className={classes.title}>
-                プリン
-              </Typography>
+              {data.map((item) => (
+                <Typography
+                  variant="h3"
+                  noWrap
+                  component="div"
+                  className={classes.title}
+                  key={item.id}
+                >
+                  PUDDING
+                </Typography>
+              ))}
             </Toolbar>
           </AppBar>
           <Drawer
@@ -163,80 +193,82 @@ function App() {
               </IconButton>
             </DrawerHeader>
             <Divider />
-            <List>
-              <ListItemButton
-                selected={selectedIndex === 0}
-                onClick={(event) => handleListItemClick(event, 0)}
-                component={Link} to="/profile"
-              >
-                <img src={UserIcon}  alt="アイコン" width="40" height="40"/>
-                  マイページ
-              </ListItemButton>
-            </List>
-            <List>
-              <ListItemButton
-                selected={selectedIndex === 0}
-                onClick={(event) => handleListItemClick(event, 0)}
-                component={Link} to="/profile"
-              >
-                <img src={EditIcon}  alt="アイコン" width="40" height="40"/>
-                  追加・編集
-              </ListItemButton>
-            </List>
-            <List>
-              <ListItemButton
-                selected={selectedIndex === 1}
-                onClick={(event) => handleListItemClick(event, 1)}
-                component={Link} to="/friends"
-              >
-                <img src={FriendsIcon}  alt="アイコン" width="40" height="40"/>
-                  友達
-              </ListItemButton>
-            </List>
-            <List>
-              <ListItemButton
-                selected={selectedIndex === 2}
-                onClick={(event) => handleListItemClick(event, 2)}
-                component={Link} to="/setting"
-              >
-                <img src={SettingIcon}  alt="アイコン" width="40" height="40"/>
-                  設定
-              </ListItemButton>
-            </List>
-            {/* <List>
-              {["新規追加", "友達", "マイページ"].map((text, index) => (
-                <ListItem button key={text}>
-                  <ListItemIcon>
-                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                  </ListItemIcon>
-                  <ListItemText primary={text} />
-                </ListItem>
-              ))}
-            </List>
-            <Divider />
-            <List>
-              {["設定", "その他"].map((text, index) => (
-                <ListItem button key={text}>
-                  <ListItemIcon>
-                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                  </ListItemIcon>
-                  <ListItemText primary={text} />
-                </ListItem>
-              ))}
-            </List> */}
+            {isAuthenticated ? (
+              <div>
+                <List>
+                  <ListItemButton
+                    selected={selectedIndex === 0}
+                    onClick={(event) => handleListItemClick(event, 0)}
+                    component={Link}
+                    to="/profile/1"
+                  >
+                    <img src={UserIcon} alt="アイコン" width="40" height="40" />
+                    マイページ
+                  </ListItemButton>
+                </List>
+                <List>
+                  <ListItemButton
+                    selected={selectedIndex === 1}
+                    onClick={(event) => handleListItemClick(event, 1)}
+                    component={Link}
+                    to="/edit"
+                  >
+                    <img src={EditIcon} alt="アイコン" width="40" height="40" />
+                    追加・編集
+                  </ListItemButton>
+                </List>
+                <List>
+                  <ListItemButton
+                    selected={selectedIndex === 2}
+                    onClick={(event) => handleListItemClick(event, 2)}
+                    component={Link}
+                    to="/friends"
+                  >
+                    <img
+                      src={FriendsIcon}
+                      alt="アイコン"
+                      width="40"
+                      height="40"
+                    />
+                    友達
+                  </ListItemButton>
+                </List>
+                <List>
+                  <ListItemButton
+                    selected={selectedIndex === 3}
+                    onClick={(event) => handleListItemClick(event, 3)}
+                    component={Link}
+                    to="/setting"
+                  >
+                    <img
+                      src={SettingIcon}
+                      alt="アイコン"
+                      width="40"
+                      height="40"
+                    />
+                    設定
+                  </ListItemButton>
+                </List>
+              </div>
+            ) : (
+              <List>
+                  <ListItemButton
+                    component={Link}
+                    to="/signin"
+                  >
+                    {/* <img
+                      src={SettingIcon}
+                      alt="アイコン"
+                      width="40"
+                      height="40"
+                    /> */}
+                    ログインしてから利用できます
+                  </ListItemButton>
+                </List>
+            )}
           </Drawer>
           <Main open={open}>
             <DrawerHeader />
-
-            {/* <SideBar /> */}
-            {/* <main className="c-main"> */}
-            <Route exact path="/" component={TopPage} />
-            <Route exact path="/signup" component={SignUp} />
-            <Route exact path="/signin" component={SignIn} />
-            <Route exact path="/profile" component={Profile} />
-            <Route exact path="/setting" component={Setting} />
-            <Route exact path="/edit" component={EditProfile} />
-            <Route exact path="/friends" component={FriendsList} />
             {/* <Route component={Page404} /> */}
             {/* <Router/> */}
             {/* </main> */}
@@ -252,6 +284,7 @@ function App() {
                   <Route path="/auth" component={Auth} />
                 </LoggedOut>
             </CookiesProvider>
+            <Router />
           </Main>
         </Box>
       </Switch>
