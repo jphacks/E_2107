@@ -225,12 +225,12 @@ export default function Profile() {
           >
             <Typography
               component="h1"
-              variant="h３"
+              variant="h3"
               sx={{
                 marginBottom: 1,
               }}
             >
-              higuのページ
+              {data.name}のページ
             </Typography>
             <Avatar
               alt="UserIcon"
