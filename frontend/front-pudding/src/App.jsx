@@ -3,7 +3,9 @@ import "./App.css";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 
 import Router from "./Router";
-import { useAuth } from "./store/useAuth";
+
+// firebase
+import { AuthProvider } from "./contexts/AuthContext"
 
 import { Link } from "react-router-dom";
 
@@ -90,7 +92,7 @@ function App() {
   const [open, setOpen] = React.useState(false);
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   const classes = useStyles();
-  const isAuthenticated = useAuth();
+  // const isAuthenticated = useAuth();
 
   const handleListItemClick = (event, index) => {
     setSelectedIndex(index);
@@ -172,7 +174,7 @@ function App() {
               </IconButton>
             </DrawerHeader>
             <Divider />
-            {isAuthenticated ? (
+            {/* {isAuthenticated ? ( */}
               <div>
                 <List>
                   <ListItemButton
@@ -244,7 +246,7 @@ function App() {
                     ログインしてから利用できます
                   </ListItemButton>
                 </List>
-            )}
+            {/* ) */}
           </Drawer>
           <Main open={open}>
             <DrawerHeader />
@@ -252,6 +254,10 @@ function App() {
             <Router />
           </Main>
         </Box>
+        {/* サインアップ処理 */}
+        <AuthProvider>
+          {/* <Signup /> */}
+        </AuthProvider>
       </Switch>
     </BrowserRouter>
   );
