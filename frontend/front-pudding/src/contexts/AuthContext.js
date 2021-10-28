@@ -17,10 +17,16 @@ export function AuthProvider({ children }) {
         return auth.createUserWithEmailAndPassword(email, password)
     }
 
+    // サインイン用の関数
+    function login(email, password) {
+      return auth.signInWithEmailAndPassword(email, password)
+    }
+
     // 共有される範囲
     const value = {
         currentUser,
-        signup
+        signup,
+        login
     }
 
     useEffect(() => {
