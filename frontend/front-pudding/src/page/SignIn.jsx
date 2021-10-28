@@ -7,7 +7,6 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { useAuth } from '../store/useAuth';
 import { auth } from "../config/firebase";
 import { Link, useHistory } from 'react-router-dom';
 
@@ -72,7 +71,6 @@ export default function SignIn() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 3 }}
-              onClick={useAuth}
             >
               Sign In
             </Button>
