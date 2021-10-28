@@ -100,8 +100,6 @@ function App() {
   const classes = useStyles();
   const history = useHistory();
 
-  console.log(user);
-
   const handleListItemClick = (event, index) => {
     setSelectedIndex(index);
   };

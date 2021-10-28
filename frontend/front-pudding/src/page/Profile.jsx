@@ -80,7 +80,7 @@ const emails = ["username@gmail.com", "user02@gmail.com"];
 
 function SimpleDialog(props) {
   const classes = useStyles();
-  const { onClose, selectedValue, open, category } = props;
+  const { onClose, selectedValue, open, category, data } = props;
 
   const handleClose = () => {
     onClose(selectedValue);
@@ -97,10 +97,10 @@ function SimpleDialog(props) {
       </DialogTitle>
       <DialogContent>
         <Box className={classes.dialog}>
-          {category === "born" && <Typography variant="h5">出身</Typography>}
-          {category === "job" && <Typography variant="h5">大学</Typography>}
-          {category === "hobby" && <Typography variant="h5">趣味</Typography>}
-          {category === "talent" && <Typography variant="h5">特技</Typography>}
+          {category === "born" && <Typography variant="h5">{data.born}</Typography>}
+          {category === "job" && <Typography variant="h5">{data.job}</Typography>}
+          {category === "hobby" && <Typography variant="h5">{data.hobby}</Typography>}
+          {category === "talent" && <Typography variant="h5">{data.talent}</Typography>}
           {!category && <Typography variant="h5">ありません</Typography>}
           {/* <Typography variant="h4">{data.born}</Typography>
         <Typography variant="h4">{data.hobby}</Typography> */}
@@ -138,9 +138,34 @@ export default function Profile() {
     history.push("/signin");
   };
 
+  const [uid, setUid] = useState("");
+  const [data, setData] = useState();
+
   useEffect(() => {
+    auth.onAuthStateChanged((user) => {
+      if(user){
+        setUid(user.uid);
+      }
+    });
+    if (uid) {
+      // addData();
+      // getData();
+      db.collection("users")
+      .doc(uid)
+      .get()
+      .then((snapshots) => {
+        const data = snapshots.data();
+        console.log(data.name);
+        setData(data);
+      });
+    }
+  }, [uid]);
+
+
+  const addData = async () => {
     db.collection("users")
-      .add({
+      .doc(uid)
+      .set({
         born: "Japan",
         job: "student",
         hobby: "Tokyo",
@@ -148,14 +173,26 @@ export default function Profile() {
         name: "higu",
         talent: "sports",
         favorite_food: "pizza",
+        uid: uid,
       })
       .then((docRef) => {
-        console.log("Document written with ID: ", docRef.id);
+        console.log("Document written with ID: ", uid);
       })
       .catch((error) => {
         console.error("Error adding document: ", error);
       });
-  }, []);
+  };
+
+  const getData = async () => {
+    db.collection("users")
+      .doc(uid)
+      .get()
+      .then((snapshots) => {
+        const data = snapshots.data();
+        setData(data);
+      });
+  };
+
 
   return (
     <Grid
@@ -174,6 +211,7 @@ export default function Profile() {
         open={open}
         onClose={handleClose}
         category={category}
+        data={data}
       />
       <Grid item md={4} xs={6} className={classes.bottom}>
         <Container fixed>
@@ -214,6 +252,7 @@ export default function Profile() {
       </Grid>
       <Grid item md={4} xs={6} className={classes.center}>
         <Container fixed>
+        {data&&(
           <Box
             sx={{
               // marginTop: 8,
@@ -229,7 +268,7 @@ export default function Profile() {
                 marginBottom: 1,
               }}
             >
-              ひぐのページ
+              {data.name}のページ
             </Typography>
             <Avatar
               alt="UserIcon"
@@ -288,6 +327,7 @@ export default function Profile() {
               </a>
             </Box>
           </Box>
+        )}
         </Container>
       </Grid>
       <Grid item md={4} xs={6} className={classes.center}>
