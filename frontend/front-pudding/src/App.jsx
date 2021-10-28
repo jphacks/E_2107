@@ -101,8 +101,6 @@ function App() {
   const [open, setOpen] = React.useState(false);
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   const classes = useStyles();
-  // const [uid, setUid] = useState("");
-  // const [otherUid, setOtherUid] = React.useState("");
 
   const path = window.location.pathname;
   const uid = path.split("/")[1];
@@ -123,7 +121,6 @@ function App() {
 
   // const path = window.location.pathname;
   // const tmp = path.split("/")[1];
-  console.log(uid);
 
   auth.onAuthStateChanged((user) => {
     if (user) {
@@ -131,17 +128,6 @@ function App() {
     }
   });
 
-  // useEffect(() => {
-  //   return () => {
-  //     auth.onAuthStateChanged((user) => {
-  //       if (user) {
-  //         setSelfUid(user.uid);
-  //       }
-  //     });
-  //     console.log("uid ->" + uid);
-  //     console.log("other ->" + selfUid);
-  //   };
-  // }, []);
 
   return (
     <BrowserRouter>

@@ -125,14 +125,16 @@ SimpleDialog.propTypes = {
 };
 
 export default function FriendProfile() {
-	console.log("friends");
+  console.log("friends");
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [selectedValue, setSelectedValue] = React.useState(emails[1]);
   const [category, setCategory] = useState("");
-  const history = useHistory();
   const path = window.location.pathname;
   const otherUid = path.split("/")[1];
+  const [clicked, setCliclked] = useState(false);
+  const [selfUid, setSelfUid] = useState("");
+  const [dateId, setDateId] = useState("");
 
   const handleClickOpen = (props) => {
     setCategory(props);
@@ -144,13 +146,13 @@ export default function FriendProfile() {
     setSelectedValue(value);
   };
 
-  const handleLogout = () => {
-    auth.signOut();
-    history.push("/signin");
-  };
+  auth.onAuthStateChanged((user) => {
+    if (user) {
+      setSelfUid(user.uid);
+    }
+  });
 
   const [data, setData] = useState();
-
   useEffect(() => {
     if (otherUid) {
       db.collection("users")
@@ -159,10 +161,44 @@ export default function FriendProfile() {
         .then((snapshots) => {
           const data = snapshots.data();
           setData(data);
-		  console.log(data);
+          console.log(data);
+        });
+      db.collection("follows")
+        .where("following_uid", "==", selfUid)
+        .where("followed_uid", "==", otherUid)
+        .get()
+        .then((snapshot) => {
+          snapshot.docs.forEach((doc) => {
+            setDateId(doc.id);
+			console.log("get deteld")
+            console.log(dateId);
+			setCliclked(true);
+          });
+        })
+        .catch((error) => {
+          console.error("Error removing document: ", error);
         });
     }
-  }, [otherUid]);
+  }, []);
+
+  const onFollow = () => {
+    setCliclked(true);
+    const followsRef = db.collection("follows").doc();
+    const friendInitialData = {
+      following_uid: selfUid,
+      followed_uid: otherUid,
+      id: followsRef.id,
+    };
+    console.log("following!");
+    followsRef.set(friendInitialData);
+  };
+
+  const onRemoveFollow = () => {
+    setCliclked(false);
+    const followsRef = db.collection("follows");
+    console.log("delete!");
+    followsRef.doc(dateId).delete();
+  };
 
   return (
     <Grid
@@ -245,15 +281,27 @@ export default function FriendProfile() {
                 src={HiguIcon}
                 sx={{ width: 130, height: 130, marginBottom: 2 }}
               />
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={() => {
-                  handleLogout();
-                }}
-              >
-                お気に入りに追加
-              </Button>
+              {!clicked ? (
+                <Button
+                  variant="outlined"
+                  size="medium"
+                  color="secondary"
+                  className={classes.margin}
+                  onClick={onFollow}
+                >
+                  お気に入りに追加
+                </Button>
+              ) : (
+                <Button
+                  variant="contained"
+                  size="medium"
+                  color="secondary"
+                  className={classes.margin}
+                  onClick={onRemoveFollow}
+                >
+                  お気に入り解除
+                </Button>
+              )}
               <Box
                 sx={{
                   marginTop: 2,
