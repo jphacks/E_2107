@@ -1,13 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-// API
-import axios from 'axios';
-import {API_BASE_URL} from '../api/index.js'
 
 // 認証系インポート
-import { useCookies } from 'react-cookie';
-import { useForm } from "react-hook-form";
-import  { useHistory } from 'react-router-dom';
+// import { useCookies } from 'react-cookie';
+// import { useForm } from "react-hook-form";
+import  { Link, useHistory } from 'react-router-dom';
+import { useAuth } from '../store/useAuth';
 
 // mui
 import Button from '@mui/material/Button';
@@ -18,9 +16,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { useAuth } from '../store/useAuth';
 import { auth } from "../config/firebase";
-import { Link, useHistory } from 'react-router-dom';
 
 
 const theme = createTheme();
