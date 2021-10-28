@@ -7,7 +7,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { useAuth } from '../store/useAuth';
+
 import { auth } from "../config/firebase";
 import { Link, useHistory } from 'react-router-dom';
 
@@ -20,9 +20,9 @@ export default function SignIn() {
   const handleSubmit = (event) => {
     event.preventDefault();
     const { email, password } = event.target.elements;
-    try{
+    try {
       auth.signInWithEmailAndPassword(email.value, password.value);
-    history.push('/');
+      history.push('/');
     } catch (error) {
       console.log(error);
       setError(error.message);
@@ -42,7 +42,7 @@ export default function SignIn() {
           }}
         >
           <Typography component="h1" variant="h5" fontSize="38px">
-          Sign In
+            Sign In
           </Typography>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 2 }}>
             {/* フォーム */}
@@ -72,7 +72,7 @@ export default function SignIn() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 3 }}
-              onClick={useAuth}
+
             >
               Sign In
             </Button>
