@@ -120,7 +120,6 @@ export default function EditProfile() {
 
     const handleListItemClick = (value) => {
       onClose(value);
-      console.log(value);
     };
 
     return (

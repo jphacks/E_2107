@@ -2,10 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./App.css";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 
-import Router from "./Router";
-import { useAuth } from "./store/useAuth";
-
-import { Link } from "react-router-dom";
+import { Link, useHistory, withRouter } from "react-router-dom";
 
 import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -27,7 +24,17 @@ import FriendsIcon from "./image/icons8-conference-64.png";
 import SettingIcon from "./image/icons8-settings-64.png";
 import { makeStyles } from "@mui/styles";
 
-import axios from "axios";
+import { useAuthContext } from "./authContext";
+
+import SignIn from "./page/SignIn";
+import SignUp from "./page/SignUp";
+import Profile from "./page/Profile";
+import Setting from "./page/Setting";
+import EditProfile from "./page/EditProfile";
+import FriendsList from "./page/FriendsList";
+
+import PrivateRoute from "./components/PrivateRoute";
+import PublicRoute from './components/PublicRoute';
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -86,11 +93,12 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 }));
 
 function App() {
+  const {user} = useAuthContext();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   const classes = useStyles();
-  const isAuthenticated = useAuth();
+  const history = useHistory();
 
   const handleListItemClick = (event, index) => {
     setSelectedIndex(index);
@@ -103,22 +111,6 @@ function App() {
   const handleDrawerClose = () => {
     setOpen(false);
   };
-
-  const [data, setData] = useState([]);
-
-  useEffect(() => {
-    axios
-      .get(`http://localhost:8000/self_introductions/`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-      .then((response) => {
-        // console.log(response.data.filter((user) => user.name === "higu"));
-        // console.log(response.data);
-        setData(response.data.filter((user) => user.name === "higu"));
-      });
-  }, []);
 
   return (
     <BrowserRouter>
@@ -136,17 +128,14 @@ function App() {
               >
                 <img src={MenuIcon} alt="アイコン" width="40" height="40" />
               </IconButton>
-              {data.map((item) => (
-                <Typography
-                  variant="h3"
-                  noWrap
-                  component="div"
-                  className={classes.title}
-                  key={item.id}
-                >
-                  PUDDING
-                </Typography>
-              ))}
+              <Typography
+                variant="h3"
+                noWrap
+                component="div"
+                className={classes.title}
+              >
+                PUDDING
+              </Typography>
             </Toolbar>
           </AppBar>
           <Drawer
@@ -172,14 +161,16 @@ function App() {
               </IconButton>
             </DrawerHeader>
             <Divider />
-            {isAuthenticated ? (
+            {user ? (
               <div>
                 <List>
                   <ListItemButton
                     selected={selectedIndex === 0}
-                    onClick={(event) => handleListItemClick(event, 0)}
+                    onClick={(event) => {
+                      handleListItemClick(event, 0);
+                    }}
                     component={Link}
-                    to="/profile/1"
+                    to="/"
                   >
                     <img src={UserIcon} alt="アイコン" width="40" height="40" />
                     マイページ
@@ -188,7 +179,9 @@ function App() {
                 <List>
                   <ListItemButton
                     selected={selectedIndex === 1}
-                    onClick={(event) => handleListItemClick(event, 1)}
+                    onClick={(event) => {
+                      handleListItemClick(event, 1);
+                    }}
                     component={Link}
                     to="/edit"
                   >
@@ -231,25 +224,21 @@ function App() {
               </div>
             ) : (
               <List>
-                  <ListItemButton
-                    component={Link}
-                    to="/signin"
-                  >
-                    {/* <img
-                      src={SettingIcon}
-                      alt="アイコン"
-                      width="40"
-                      height="40"
-                    /> */}
-                    ログインしてから利用できます
-                  </ListItemButton>
-                </List>
+                <ListItemButton component={Link} to="/signin">
+                  ログインしてから利用できます
+                </ListItemButton>
+              </List>
             )}
           </Drawer>
           <Main open={open}>
             <DrawerHeader />
-            {/* <Route component={Page404} /> */}
-            <Router />
+            <PrivateRoute exact path="/" component={Profile} />
+          <PrivateRoute exact path="/setting" component={Setting} />
+          <PrivateRoute exact path="/edit" component={EditProfile} />
+          <PrivateRoute exact path="/friends" component={FriendsList} />
+          <PublicRoute exact path="/" component={SignUp} />
+          <PublicRoute path="/signin" exact component={SignIn} />
+          <PublicRoute path="/signup" component={SignUp} />
           </Main>
         </Box>
       </Switch>
@@ -257,4 +246,4 @@ function App() {
   );
 }
 
-export default App;
+export default withRouter(App);
