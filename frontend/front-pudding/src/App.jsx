@@ -1,27 +1,9 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 
-import TopPage from "./page/TopPage";
-import SignUp from "./page/SignUp";
-import Profile from "./page/Profile";
-import SignIn from "./page/SignIn";
-import Setting from "./page/Setting";
-import EditProfile from "./page/EditProfile";
-import FriendsList from "./page/FriendsList";
-import Auth from "./page/apitest"
-import LoggedIn from './page/apitestin';
-import LoggedOut from './page/apitestout';
-import Home from "./page/apitesthome";
+import { Link, useHistory, withRouter } from "react-router-dom";
 
-import Router from "./Router";
-
-import { Link } from "react-router-dom";
-
-// 認証系
-import { CookiesProvider, withCookies } from 'react-cookie';
-
-// mui
 import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
@@ -33,32 +15,40 @@ import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import ListItem from "@mui/material/ListItem";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
 import MuiAppBar from "@mui/material/AppBar";
-import Button from "@mui/material/Button";
 import ListItemButton from "@mui/material/ListItemButton";
-import MenuIcon from './image/icons8-four-squares-64.png';
-import UserIcon from './image/icons8-female-profile-64.png';
-import EditIcon from './image/icons8-edit-64.png';
-import FriendsIcon from './image/icons8-conference-64.png';
-import SettingIcon from './image/icons8-settings-64.png';
-import { makeStyles } from '@mui/styles';
+import MenuIcon from "./image/icons8-four-squares-64.png";
+import UserIcon from "./image/icons8-female-profile-64.png";
+import EditIcon from "./image/icons8-edit-64.png";
+import FriendsIcon from "./image/icons8-conference-64.png";
+import SettingIcon from "./image/icons8-settings-64.png";
+import { makeStyles } from "@mui/styles";
 
-const useStyles = makeStyles(theme => ({
+import { useAuthContext } from "./authContext";
+
+import SignIn from "./page/SignIn";
+import SignUp from "./page/SignUp";
+import Profile from "./page/Profile";
+import Setting from "./page/Setting";
+import EditProfile from "./page/EditProfile";
+import FriendsList from "./page/FriendsList";
+
+import PrivateRoute from "./components/PrivateRoute";
+import PublicRoute from './components/PublicRoute';
+
+const useStyles = makeStyles((theme) => ({
   title: {
     flexGrow: 1,
-    textAlign: 'center',
+    textAlign: "center",
+    color: "#555555",
   },
 }));
 
-const drawerWidth = 180;
+const drawerWidth = 170;
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({
     flexGrow: 1,
-    padding: theme.spacing(3),
     transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
@@ -77,11 +67,13 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
 })(({ theme, open }) => ({
+  height: 64,
   transition: theme.transitions.create(["margin", "width"], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
   ...(open && {
+    height: 64,
     width: `calc(100% - ${drawerWidth}px)`,
     marginLeft: `${drawerWidth}px`,
     transition: theme.transitions.create(["margin", "width"], {
@@ -101,10 +93,12 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 }));
 
 function App() {
+  const {user} = useAuthContext();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   const classes = useStyles();
+  const history = useHistory();
 
   const handleListItemClick = (event, index) => {
     setSelectedIndex(index);
@@ -132,10 +126,15 @@ function App() {
                 edge="start"
                 sx={{ mr: 2, ...(open && { display: "none" }) }}
               >
-                <img src={MenuIcon}  alt="アイコン" width="40" height="40"/>
+                <img src={MenuIcon} alt="アイコン" width="40" height="40" />
               </IconButton>
-              <Typography variant="h4" noWrap component="div" className={classes.title}>
-                プリン
+              <Typography
+                variant="h3"
+                noWrap
+                component="div"
+                className={classes.title}
+              >
+                PUDDING
               </Typography>
             </Toolbar>
           </AppBar>
@@ -162,95 +161,84 @@ function App() {
               </IconButton>
             </DrawerHeader>
             <Divider />
-            <List>
-              <ListItemButton
-                selected={selectedIndex === 0}
-                onClick={(event) => handleListItemClick(event, 0)}
-                component={Link} to="/profile"
-              >
-                <img src={UserIcon}  alt="アイコン" width="40" height="40"/>
-                  マイページ
-              </ListItemButton>
-            </List>
-            <List>
-              <ListItemButton
-                selected={selectedIndex === 0}
-                onClick={(event) => handleListItemClick(event, 0)}
-                component={Link} to="/profile"
-              >
-                <img src={EditIcon}  alt="アイコン" width="40" height="40"/>
-                  追加・編集
-              </ListItemButton>
-            </List>
-            <List>
-              <ListItemButton
-                selected={selectedIndex === 1}
-                onClick={(event) => handleListItemClick(event, 1)}
-                component={Link} to="/friends"
-              >
-                <img src={FriendsIcon}  alt="アイコン" width="40" height="40"/>
-                  友達
-              </ListItemButton>
-            </List>
-            <List>
-              <ListItemButton
-                selected={selectedIndex === 2}
-                onClick={(event) => handleListItemClick(event, 2)}
-                component={Link} to="/setting"
-              >
-                <img src={SettingIcon}  alt="アイコン" width="40" height="40"/>
-                  設定
-              </ListItemButton>
-            </List>
-            {/* <List>
-              {["新規追加", "友達", "マイページ"].map((text, index) => (
-                <ListItem button key={text}>
-                  <ListItemIcon>
-                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                  </ListItemIcon>
-                  <ListItemText primary={text} />
-                </ListItem>
-              ))}
-            </List>
-            <Divider />
-            <List>
-              {["設定", "その他"].map((text, index) => (
-                <ListItem button key={text}>
-                  <ListItemIcon>
-                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                  </ListItemIcon>
-                  <ListItemText primary={text} />
-                </ListItem>
-              ))}
-            </List> */}
+            {user ? (
+              <div>
+                <List>
+                  <ListItemButton
+                    selected={selectedIndex === 0}
+                    onClick={(event) => {
+                      handleListItemClick(event, 0);
+                    }}
+                    component={Link}
+                    to="/"
+                  >
+                    <img src={UserIcon} alt="アイコン" width="40" height="40" />
+                    マイページ
+                  </ListItemButton>
+                </List>
+                <List>
+                  <ListItemButton
+                    selected={selectedIndex === 1}
+                    onClick={(event) => {
+                      handleListItemClick(event, 1);
+                    }}
+                    component={Link}
+                    to="/edit"
+                  >
+                    <img src={EditIcon} alt="アイコン" width="40" height="40" />
+                    追加・編集
+                  </ListItemButton>
+                </List>
+                <List>
+                  <ListItemButton
+                    selected={selectedIndex === 2}
+                    onClick={(event) => handleListItemClick(event, 2)}
+                    component={Link}
+                    to="/friends"
+                  >
+                    <img
+                      src={FriendsIcon}
+                      alt="アイコン"
+                      width="40"
+                      height="40"
+                    />
+                    友達
+                  </ListItemButton>
+                </List>
+                <List>
+                  <ListItemButton
+                    selected={selectedIndex === 3}
+                    onClick={(event) => handleListItemClick(event, 3)}
+                    component={Link}
+                    to="/setting"
+                  >
+                    <img
+                      src={SettingIcon}
+                      alt="アイコン"
+                      width="40"
+                      height="40"
+                    />
+                    設定
+                  </ListItemButton>
+                </List>
+              </div>
+            ) : (
+              <List>
+                <ListItemButton component={Link} to="/signin">
+                  ログインしてから利用できます
+                </ListItemButton>
+              </List>
+            )}
           </Drawer>
           <Main open={open}>
             <DrawerHeader />
-
-            {/* <SideBar /> */}
-            {/* <main className="c-main"> */}
-            <Route exact path="/" component={TopPage} />
-            <Route exact path="/signup" component={SignUp} />
-            <Route exact path="/signin" component={SignIn} />
-            <Route exact path="/profile" component={Profile} />
-            <Route exact path="/setting" component={Setting} />
-            <Route exact path="/edit" component={EditProfile} />
-            <Route exact path="/friends" component={FriendsList} />
-            {/* <Route component={Page404} /> */}
-            {/* <Router/> */}
-            {/* </main> */}
-            <CookiesProvider>
-
-                <LoggedIn>
-                  <Route path="/" exact component={Home} />
-                  {/* <Route path="/post/:postId/" component={Post} />
-                  <Route path="/new" component={registerForm} /> */}
-                </LoggedIn>
-
-                <LoggedOut>
-                  <Route path="/auth" component={Auth} />
-                </LoggedOut>
-            </CookiesProvider>
+            <PrivateRoute exact path="/" component={Profile} />
+          <PrivateRoute exact path="/setting" component={Setting} />
+          <PrivateRoute exact path="/edit" component={EditProfile} />
+          <PrivateRoute exact path="/friends" component={FriendsList} />
+          <PublicRoute exact path="/" component={SignUp} />
+          <PublicRoute path="/signin" exact component={SignIn} />
+          <PublicRoute path="/signup" component={SignUp} />
           </Main>
         </Box>
       </Switch>
@@ -258,4 +246,4 @@ function App() {
   );
 }
 
-export default App;
+export default withRouter(App);
