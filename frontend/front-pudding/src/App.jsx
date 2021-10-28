@@ -4,6 +4,7 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 
 import { Link, useHistory, withRouter } from "react-router-dom";
 
+// @mui
 import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
@@ -13,8 +14,8 @@ import List from "@mui/material/List";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
-import Button from "@mui/material/Button";
-import Stack from '@mui/material/Stack';
+// import Button from "@mui/material/Button";
+// import Stack from '@mui/material/Stack';
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import MuiAppBar from "@mui/material/AppBar";
@@ -26,8 +27,10 @@ import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { makeStyles } from "@mui/styles";
 
+// 認証系
 import { useAuthContext } from "./authContext";
 
+// ページインポート
 import SignIn from "./page/SignIn";
 import SignUp from "./page/SignUp";
 import Profile from "./page/Profile";
@@ -35,10 +38,11 @@ import Setting from "./page/Setting";
 import EditProfile from "./page/EditProfile";
 import FriendsList from "./page/FriendsList";
 
+// ルーティング
 import PrivateRoute from "./components/PrivateRoute";
 import PublicRoute from './components/PublicRoute';
 
-import Demo from './components/demo';
+// import Demo from './components/demo';
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -148,7 +152,7 @@ function App() {
           </AppBar>
 
           {/* <Demo></Demo> */}
-          
+
           <Drawer
             sx={{
               width: drawerWidth,
