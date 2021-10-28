@@ -1,4 +1,12 @@
-import * as React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+
+
+// 認証系インポート
+// import { useCookies } from 'react-cookie';
+// import { useForm } from "react-hook-form";
+import  { Link, useHistory } from 'react-router-dom';
+
+// mui
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
@@ -7,14 +15,18 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
 import { auth } from "../config/firebase";
-import { Link, useHistory } from 'react-router-dom';
 
 
 const theme = createTheme();
 
+
 export default function SignIn() {
+
   const history = useHistory();
   const [error, setError] = React.useState('');
   const handleSubmit = (event) => {
@@ -30,6 +42,7 @@ export default function SignIn() {
   };
 
   return (
+
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
@@ -72,7 +85,10 @@ export default function SignIn() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 3 }}
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
             >
               Sign In
             </Button>
