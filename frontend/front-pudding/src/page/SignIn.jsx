@@ -2,29 +2,32 @@ import * as React from 'react';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useAuth } from '../store/useAuth';
+import { auth } from "../config/firebase";
+import { Link, useHistory } from 'react-router-dom';
 
 
 const theme = createTheme();
 
 export default function SignIn() {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const history = useHistory();
+  const [error, setError] = React.useState('');
+  const handleSubmit = (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    // eslint-disable-next-line no-console
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    const { email, password } = event.target.elements;
+    try{
+      auth.signInWithEmailAndPassword(email.value, password.value);
+    history.push('/');
+    } catch (error) {
+      console.log(error);
+      setError(error.message);
+    }
   };
-
-
 
   return (
     <ThemeProvider theme={theme}>
@@ -78,9 +81,9 @@ export default function SignIn() {
               </Grid>
               <Grid item>
                 {/* 遷移 */}
-                <Link href="/signup"  variant="body2">
+                <Button onClick={() => history.push("/signup")} variant="contained">
                   {"Sign up"}
-                </Link>
+                </Button>
               </Grid>
             </Grid>
           </Box>

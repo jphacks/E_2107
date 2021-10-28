@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
@@ -25,6 +25,8 @@ import ColorImage from "../image/color.jpeg";
 
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
+import { db } from "../config/firebase";
+import { auth } from "../config/firebase";
 
 const drawerWidth = 240;
 
@@ -42,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
   },
   submit: {
     width: "250px",
-    height: "60px"
+    height: "60px",
   },
   root: {
     display: "flex",
@@ -120,7 +122,6 @@ export default function EditProfile() {
 
     const handleListItemClick = (value) => {
       onClose(value);
-      console.log(value);
     };
 
     return (
@@ -141,19 +142,63 @@ export default function EditProfile() {
     );
   };
 
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const { born, job, hobby, dream, name, talent, favorite_food } =
+      event.target.elements;
+    auth.onAuthStateChanged((user) => {
+      db.collection("users").doc(user.uid).update({
+        born: born.value,
+        job: job.value,
+        hobby: hobby.value,
+        // dream: dream.value,
+        name: name.value,
+        talent: talent.value,
+        favorite_food: favorite_food.value,
+      });
+    });
+  };
+
+  const [uid, setUid] = useState("");
+  const [data, setData] = useState();
+
+  useEffect(() => {
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        setUid(user.uid);
+      }
+    });
+    if (uid) {
+      db.collection("users")
+        .doc(uid)
+        .get()
+        .then((snapshots) => {
+          const data = snapshots.data();
+          console.log(data.name);
+          setData(data);
+        });
+    }
+  }, [uid]);
+
   return (
     <Container component="main" maxWidth="xl" className={classes.container}>
       <Box m={1}>
         <Typography variant="h4">追加・編集</Typography>
       </Box>
       <CssBaseline />
-      <form className={classes.form} noValidate>
+      <Box
+        className={classes.form}
+        component="form"
+        noValidate
+        onSubmit={handleSubmit}
+      >
+        {data && (
         <Grid container spacing={1}>
-          <Grid item xs={12} sm={7}>
+          <Grid item xs={12} sm={8}>
             <TableContainer component={Paper}>
               <TableBody>
                 <TableRow>
-                  <TableCell width="270px">
+                  <TableCell width="300px">
                     <Box
                       display="inline"
                       lineHeight="50px"
@@ -169,11 +214,12 @@ export default function EditProfile() {
                       <Grid item xs={12} sm={11}>
                         <TextField
                           autoComplete="name"
-                          name="Name"
+                          name="name"
                           variant="outlined"
                           required
                           fullWidth
-                          id="Name"
+                          defaultValue={data.name}
+                          id="name"
                           label="氏名"
                         />
                       </Grid>
@@ -181,7 +227,7 @@ export default function EditProfile() {
                   </TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell width="270px">
+                  <TableCell width="300px">
                     <Box
                       display="inline"
                       lineHeight="50px"
@@ -196,20 +242,21 @@ export default function EditProfile() {
                     <Box display="inline" lineHeight="50px">
                       <Grid item xs={12} sm={11}>
                         <TextField
-                          autoComplete="companyId"
-                          name="CompanyId"
+                          autoComplete="born"
+                          name="born"
                           variant="outlined"
                           required
                           fullWidth
-                          id="CompanyId"
+                          id="born"
                           label="出身"
+                          defaultValue={data.born}
                         />
                       </Grid>
                     </Box>
                   </TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell width="270px">
+                  <TableCell width="300px">
                     <Box
                       display="inline"
                       lineHeight="50px"
@@ -224,20 +271,21 @@ export default function EditProfile() {
                     <Box display="inline" lineHeight="50px">
                       <Grid item xs={12} sm={11}>
                         <TextField
-                          autoComplete="companyId"
-                          name="CompanyId"
+                          autoComplete="job"
+                          name="job"
                           variant="outlined"
                           required
                           fullWidth
-                          id="CompanyId"
+                          id="job"
                           label="大学"
+                          defaultValue={data.job}
                         />
                       </Grid>
                     </Box>
                   </TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell width="270px">
+                  <TableCell width="300px">
                     <Box
                       display="inline"
                       lineHeight="50px"
@@ -252,20 +300,21 @@ export default function EditProfile() {
                     <Box display="inline" lineHeight="50px">
                       <Grid item xs={12} sm={11}>
                         <TextField
-                          autoComplete="companyId"
-                          name="CompanyId"
+                          autoComplete="hobby"
+                          name="hobby"
                           variant="outlined"
                           required
                           fullWidth
                           id="CompanyId"
                           label="趣味"
+                          defaultValue={data.hobby}
                         />
                       </Grid>
                     </Box>
                   </TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell width="270px">
+                  <TableCell width="300px">
                     <Box
                       display="inline"
                       lineHeight="50px"
@@ -273,27 +322,28 @@ export default function EditProfile() {
                       fontSize="18px"
                       m="15px"
                     >
-                      好きな曲
+                      好きな食べ物
                     </Box>
                   </TableCell>
                   <TableCell width="650px">
                     <Box display="inline" lineHeight="50px">
                       <Grid item xs={12} sm={11}>
                         <TextField
-                          autoComplete="companyId"
-                          name="CompanyId"
+                          autoComplete="favorite_food"
+                          name="favorite_food"
                           variant="outlined"
                           required
                           fullWidth
-                          id="CompanyId"
-                          label="好きな曲"
+                          id="favorite_food"
+                          label="好きな食べ物"
+                          defaultValue={data.favorite_food}
                         />
                       </Grid>
                     </Box>
                   </TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell width="270px">
+                  <TableCell width="300px">
                     <Box
                       display="inline"
                       lineHeight="50px"
@@ -301,20 +351,21 @@ export default function EditProfile() {
                       fontSize="18px"
                       m="15px"
                     >
-                      マイブーム
+                      特技
                     </Box>
                   </TableCell>
                   <TableCell width="650px">
                     <Box display="inline" lineHeight="50px">
                       <Grid item xs={12} sm={11}>
                         <TextField
-                          autoComplete="companyId"
-                          name="CompanyId"
+                          autoComplete="talent"
+                          name="talent"
                           variant="outlined"
                           required
                           fullWidth
-                          id="CompanyId"
-                          label="会社ID"
+                          id="talent"
+                          label="特技"
+                          defaultValue={data.talent}
                         />
                       </Grid>
                     </Box>
@@ -326,7 +377,7 @@ export default function EditProfile() {
                     open={open}
                     onClose={handleClose}
                   />
-                  <TableCell width="270px">
+                  <TableCell width="300px">
                     <Box
                       display="inline"
                       fontStyle="Roboto"
@@ -368,7 +419,7 @@ export default function EditProfile() {
             </TableContainer>
           </Grid>
 
-          <Grid item xs={12} sm={5}>
+          <Grid item xs={12} sm={4}>
             <TableContainer component={Paper}>
               <Box
                 sx={{
@@ -395,22 +446,23 @@ export default function EditProfile() {
                   />
                 </Button>
                 <Box m={4}>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  className={classes.submit}
-                >
-                    <Typography variant="h5">
-                  保存する
-                  </Typography>
-                </Button>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    className={classes.submit}
+                  >
+                    <Typography variant="h6">
+                      保存する
+                      </Typography>
+                  </Button>
                 </Box>
               </Box>
             </TableContainer>
           </Grid>
         </Grid>
-      </form>
+        )}
+      </Box>
     </Container>
   );
 }

@@ -20,6 +20,9 @@ import DialogContent from "@mui/material/DialogContent";
 import SkyImage from "../image/sky.jpeg";
 import GreenImage from "../image/green.jpeg";
 import ColorImage from "../image/color.jpeg";
+import { db } from "../config/firebase";
+import { auth } from "../config/firebase";
+import { Link, useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -69,15 +72,15 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
   },
   dialogtitle: {
-    color: "#666666"
-  }
+    color: "#666666",
+  },
 }));
 
 const emails = ["username@gmail.com", "user02@gmail.com"];
 
 function SimpleDialog(props) {
   const classes = useStyles();
-  const { onClose, selectedValue, open, data, category } = props;
+  const { onClose, selectedValue, open, category, data } = props;
 
   const handleClose = () => {
     onClose(selectedValue);
@@ -87,29 +90,27 @@ function SimpleDialog(props) {
     <Dialog onClose={handleClose} open={open}>
       <DialogTitle className={classes.dialogtitle}>
         {category === "born" && <Typography variant="h4">出身</Typography>}
-        {category === "job" && (
-          <Typography variant="h4">大学・職場</Typography>
-        )}
+        {category === "job" && <Typography variant="h4">大学・職場</Typography>}
         {category === "hobby" && <Typography variant="h4">趣味</Typography>}
         {category === "talent" && <Typography variant="h4">特技</Typography>}
         {!category && <Typography variant="h4">ありません</Typography>}
-        </DialogTitle>
+      </DialogTitle>
       <DialogContent>
         <Box className={classes.dialog}>
-        {category === "born" && (
-          <Typography variant="h5">{data.born}</Typography>
-        )}
-        {category === "job" && (
-          <Typography variant="h5">{data.job}</Typography>
-        )}
-        {category === "hobby" && (
-          <Typography variant="h5">{data.hobby}</Typography>
-        )}
-        {category === "talent" && (
-          <Typography variant="h5">{data.talent}</Typography>
-        )}
-        {!category && <Typography variant="h5">ありません</Typography>}
-        {/* <Typography variant="h4">{data.born}</Typography>
+          {category === "born" && (
+            <Typography variant="h5">{data.born}</Typography>
+          )}
+          {category === "job" && (
+            <Typography variant="h5">{data.job}</Typography>
+          )}
+          {category === "hobby" && (
+            <Typography variant="h5">{data.hobby}</Typography>
+          )}
+          {category === "talent" && (
+            <Typography variant="h5">{data.talent}</Typography>
+          )}
+          {!category && <Typography variant="h5">ありません</Typography>}
+          {/* <Typography variant="h4">{data.born}</Typography>
         <Typography variant="h4">{data.hobby}</Typography> */}
         </Box>
       </DialogContent>
@@ -128,10 +129,7 @@ export default function Profile() {
   const [open, setOpen] = React.useState(false);
   const [selectedValue, setSelectedValue] = React.useState(emails[1]);
   const [category, setCategory] = useState("");
-
-  const path = window.location.pathname;
-  const uid = path.split("/profile/")[1];
-  console.log(uid);
+  const history = useHistory();
 
   const handleClickOpen = (props) => {
     setCategory(props);
@@ -143,32 +141,31 @@ export default function Profile() {
     setSelectedValue(value);
   };
 
-  const [data, setData] = useState([]);
-  const [userData, setUserData] = useState();
-  // const { id } = useParams();
+  const handleLogout = () => {
+    auth.signOut();
+    history.push("/signin");
+  };
+
+  const [uid, setUid] = useState("");
+  const [data, setData] = useState();
 
   useEffect(() => {
-    axios
-      .get(`http://localhost:8000/self_introductions/`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-      .then((response) => {
-        // console.log(response.data.filter((user) => user.name === "higu"));
-        console.log(response.data.filter((user) => user.id == uid));
-        // console.log(response.data);
-        //一つしか入れてない
-        setData(...response.data.filter((user) => user.id == uid));
-      });
-  }, []);
-
-  console.log(data.id);
-  // setUserData(...data);
-
-  // const userData = data
-
-  // console.log(userData[0]);
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        setUid(user.uid);
+      }
+    });
+    if (uid) {
+      db.collection("users")
+        .doc(uid)
+        .get()
+        .then((snapshots) => {
+          const data = snapshots.data();
+          console.log(data.name);
+          setData(data);
+        });
+    }
+  }, [uid]);
 
   return (
     <Grid
@@ -186,8 +183,8 @@ export default function Profile() {
         selectedValue={selectedValue}
         open={open}
         onClose={handleClose}
-        data={data}
         category={category}
+        data={data}
       />
       <Grid item md={4} xs={6} className={classes.bottom}>
         <Container fixed>
@@ -228,72 +225,82 @@ export default function Profile() {
       </Grid>
       <Grid item md={4} xs={6} className={classes.center}>
         <Container fixed>
-          <Box
-            sx={{
-              // marginTop: 8,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
-          >
-            <Typography
-              component="h1"
-              variant="h3"
-              sx={{
-                marginBottom: 1,
-              }}
-            >
-              {data.name}のページ
-            </Typography>
-            <Avatar
-              alt="UserIcon"
-              src={HiguIcon}
-              sx={{ width: 130, height: 130, marginBottom: 2 }}
-            />
-            <Button variant="contained" color="secondary">お気に入りに追加</Button>
+          {data && (
             <Box
               sx={{
-                marginTop: 2,
+                // marginTop: 8,
                 display: "flex",
-                flexDirection: "row",
+                flexDirection: "column",
                 alignItems: "center",
               }}
             >
-              <a
-                href={`https://twitter.com/${data.twitter}`}
-                target="_blank"
-                rel="noopener noreferrer"
+              <Typography
+                component="h1"
+                variant="h3"
+                sx={{
+                  marginBottom: 1,
+                }}
               >
-                <Avatar
-                  alt="UserIcon"
-                  src={TwitterIcon}
-                  sx={{ margin: 1, width: 50, height: 50 }}
-                />
-              </a>
-              <a
-                href={`https://www.instagram.com/${data.twitter}`}
-                target="_blank"
-                rel="noopener noreferrer"
+                {data.name}のページ
+              </Typography>
+              <Avatar
+                alt="UserIcon"
+                src={HiguIcon}
+                sx={{ width: 130, height: 130, marginBottom: 2 }}
+              />
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={() => {
+                  handleLogout();
+                }}
               >
-                <Avatar
-                  alt="UserIcon"
-                  src={InstaIcon}
-                  sx={{ margin: 1, width: 50, height: 50 }}
-                />
-              </a>
-              <a
-                href={`https://github.com/${data.twitter}`}
-                target="_blank"
-                rel="noopener noreferrer"
+                お気に入りに追加
+              </Button>
+              <Box
+                sx={{
+                  marginTop: 2,
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
               >
-                <Avatar
-                  alt="UserIcon"
-                  src={FaceBookIcon}
-                  sx={{ margin: 1, width: 50, height: 50 }}
-                />
-              </a>
+                <a
+                  href={`https://twitter.com/github`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Avatar
+                    alt="UserIcon"
+                    src={TwitterIcon}
+                    sx={{ margin: 1, width: 50, height: 50 }}
+                  />
+                </a>
+                <a
+                  href={`https://www.instagram.com/github`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Avatar
+                    alt="UserIcon"
+                    src={InstaIcon}
+                    sx={{ margin: 1, width: 50, height: 50 }}
+                  />
+                </a>
+                <a
+                  href={`https://github.com/github`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Avatar
+                    alt="UserIcon"
+                    src={FaceBookIcon}
+                    sx={{ margin: 1, width: 50, height: 50 }}
+                  />
+                </a>
+              </Box>
             </Box>
-          </Box>
+          )}
         </Container>
       </Grid>
       <Grid item md={4} xs={6} className={classes.center}>
