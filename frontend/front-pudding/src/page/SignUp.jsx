@@ -7,22 +7,41 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { useAuthContext } from '../authContext';
-import { auth } from '../config/firebase';
-import {Link, useHistory } from 'react-router-dom';
-
+import { useAuthContext } from "../authContext";
+import { auth } from "../config/firebase";
+import { Link, useHistory } from "react-router-dom";
+import { db } from "../config/firebase";
 
 const theme = createTheme();
 
 export default function SignUp() {
   const history = useHistory();
-  const [error, setError] = React.useState('');
+  const [error, setError] = React.useState("");
   const handleSubmit = (event) => {
     event.preventDefault();
-    const { email, password } = event.target.elements;
+    const { email, password, name } = event.target.elements;
     try {
       auth.createUserWithEmailAndPassword(email.value, password.value);
-      history.push('/');
+      auth.onAuthStateChanged((user) => {
+        if (user) {
+          const userInitialData = {
+            born: "",
+            job: "",
+            hobby: "",
+            dream: "",
+            name: name.value,
+            talent: "",
+            favorite_food: "",
+            uid: user.uid,
+          };
+          db.collection("users")
+            .doc(user.uid)
+            .set(userInitialData)
+            .then(async () => {
+              history.push("/");
+            });
+        }
+      });
     } catch (error) {
       setError(error.message);
     }
@@ -50,17 +69,17 @@ export default function SignUp() {
             sx={{ mt: 5 }}
           >
             <Grid container spacing={2}>
-              {/* <Grid item xs={12}>
+              <Grid item xs={12}>
                 <TextField
-                  autoComplete="given-name"
-                  name="firstName"
+                  autoComplete="name"
+                  name="name"
                   required
                   fullWidth
-                  id="firstName"
+                  id="name"
                   label="氏名"
                   autoFocus
                 />
-              </Grid> */}
+              </Grid>
               <Grid item xs={12}>
                 <TextField
                   required
@@ -95,9 +114,9 @@ export default function SignUp() {
             <Grid container justifyContent="flex-end">
               {/* 遷移 */}
               <Grid item>
-                <Link href="/signin" variant="body2">
+                <Button onClick={() => history.push("/signin")} variant="contained">
                   {"Sign in"}
-                </Link>
+                </Button>
               </Grid>
             </Grid>
           </Box>

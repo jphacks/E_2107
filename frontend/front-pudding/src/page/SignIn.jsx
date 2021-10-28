@@ -81,9 +81,9 @@ export default function SignIn() {
               </Grid>
               <Grid item>
                 {/* 遷移 */}
-                <Link href="/signup"  variant="body2">
+                <Button onClick={() => history.push("/signup")} variant="contained">
                   {"Sign up"}
-                </Link>
+                </Button>
               </Grid>
             </Grid>
           </Box>

@@ -97,10 +97,18 @@ function SimpleDialog(props) {
       </DialogTitle>
       <DialogContent>
         <Box className={classes.dialog}>
-          {category === "born" && <Typography variant="h5">{data.born}</Typography>}
-          {category === "job" && <Typography variant="h5">{data.job}</Typography>}
-          {category === "hobby" && <Typography variant="h5">{data.hobby}</Typography>}
-          {category === "talent" && <Typography variant="h5">{data.talent}</Typography>}
+          {category === "born" && (
+            <Typography variant="h5">{data.born}</Typography>
+          )}
+          {category === "job" && (
+            <Typography variant="h5">{data.job}</Typography>
+          )}
+          {category === "hobby" && (
+            <Typography variant="h5">{data.hobby}</Typography>
+          )}
+          {category === "talent" && (
+            <Typography variant="h5">{data.talent}</Typography>
+          )}
           {!category && <Typography variant="h5">ありません</Typography>}
           {/* <Typography variant="h4">{data.born}</Typography>
         <Typography variant="h4">{data.hobby}</Typography> */}
@@ -143,56 +151,21 @@ export default function Profile() {
 
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
-      if(user){
+      if (user) {
         setUid(user.uid);
       }
     });
     if (uid) {
-      // addData();
-      // getData();
       db.collection("users")
-      .doc(uid)
-      .get()
-      .then((snapshots) => {
-        const data = snapshots.data();
-        console.log(data.name);
-        setData(data);
-      });
+        .doc(uid)
+        .get()
+        .then((snapshots) => {
+          const data = snapshots.data();
+          console.log(data.name);
+          setData(data);
+        });
     }
   }, [uid]);
-
-
-  const addData = async () => {
-    db.collection("users")
-      .doc(uid)
-      .set({
-        born: "Japan",
-        job: "student",
-        hobby: "Tokyo",
-        dream: "engineer",
-        name: "higu",
-        talent: "sports",
-        favorite_food: "pizza",
-        uid: uid,
-      })
-      .then((docRef) => {
-        console.log("Document written with ID: ", uid);
-      })
-      .catch((error) => {
-        console.error("Error adding document: ", error);
-      });
-  };
-
-  const getData = async () => {
-    db.collection("users")
-      .doc(uid)
-      .get()
-      .then((snapshots) => {
-        const data = snapshots.data();
-        setData(data);
-      });
-  };
-
 
   return (
     <Grid
@@ -252,82 +225,82 @@ export default function Profile() {
       </Grid>
       <Grid item md={4} xs={6} className={classes.center}>
         <Container fixed>
-        {data&&(
-          <Box
-            sx={{
-              // marginTop: 8,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
-          >
-            <Typography
-              component="h1"
-              variant="h3"
-              sx={{
-                marginBottom: 1,
-              }}
-            >
-              {data.name}のページ
-            </Typography>
-            <Avatar
-              alt="UserIcon"
-              src={HiguIcon}
-              sx={{ width: 130, height: 130, marginBottom: 2 }}
-            />
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={() => {
-                handleLogout();
-              }}
-            >
-              お気に入りに追加
-            </Button>
+          {data && (
             <Box
               sx={{
-                marginTop: 2,
+                // marginTop: 8,
                 display: "flex",
-                flexDirection: "row",
+                flexDirection: "column",
                 alignItems: "center",
               }}
             >
-              <a
-                href={`https://twitter.com/github`}
-                target="_blank"
-                rel="noopener noreferrer"
+              <Typography
+                component="h1"
+                variant="h3"
+                sx={{
+                  marginBottom: 1,
+                }}
               >
-                <Avatar
-                  alt="UserIcon"
-                  src={TwitterIcon}
-                  sx={{ margin: 1, width: 50, height: 50 }}
-                />
-              </a>
-              <a
-                href={`https://www.instagram.com/github`}
-                target="_blank"
-                rel="noopener noreferrer"
+                {data.name}のページ
+              </Typography>
+              <Avatar
+                alt="UserIcon"
+                src={HiguIcon}
+                sx={{ width: 130, height: 130, marginBottom: 2 }}
+              />
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={() => {
+                  handleLogout();
+                }}
               >
-                <Avatar
-                  alt="UserIcon"
-                  src={InstaIcon}
-                  sx={{ margin: 1, width: 50, height: 50 }}
-                />
-              </a>
-              <a
-                href={`https://github.com/github`}
-                target="_blank"
-                rel="noopener noreferrer"
+                お気に入りに追加
+              </Button>
+              <Box
+                sx={{
+                  marginTop: 2,
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
               >
-                <Avatar
-                  alt="UserIcon"
-                  src={FaceBookIcon}
-                  sx={{ margin: 1, width: 50, height: 50 }}
-                />
-              </a>
+                <a
+                  href={`https://twitter.com/github`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Avatar
+                    alt="UserIcon"
+                    src={TwitterIcon}
+                    sx={{ margin: 1, width: 50, height: 50 }}
+                  />
+                </a>
+                <a
+                  href={`https://www.instagram.com/github`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Avatar
+                    alt="UserIcon"
+                    src={InstaIcon}
+                    sx={{ margin: 1, width: 50, height: 50 }}
+                  />
+                </a>
+                <a
+                  href={`https://github.com/github`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Avatar
+                    alt="UserIcon"
+                    src={FaceBookIcon}
+                    sx={{ margin: 1, width: 50, height: 50 }}
+                  />
+                </a>
+              </Box>
             </Box>
-          </Box>
-        )}
+          )}
         </Container>
       </Grid>
       <Grid item md={4} xs={6} className={classes.center}>
