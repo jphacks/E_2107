@@ -13,15 +13,17 @@ import List from "@mui/material/List";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
+import Button from "@mui/material/Button";
+import Stack from '@mui/material/Stack';
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import MuiAppBar from "@mui/material/AppBar";
 import ListItemButton from "@mui/material/ListItemButton";
-import MenuIcon from "./image/icons8-four-squares-64.png";
-import UserIcon from "./image/icons8-female-profile-64.png";
-import EditIcon from "./image/icons8-edit-64.png";
-import FriendsIcon from "./image/icons8-conference-64.png";
-import SettingIcon from "./image/icons8-settings-64.png";
+import ListIcon from '@mui/icons-material/List';
+import FaceIcon from '@mui/icons-material/Face';
+import EditIcon from '@mui/icons-material/Edit';
+import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
+import SettingsIcon from '@mui/icons-material/Settings';
 import { makeStyles } from "@mui/styles";
 
 import { useAuthContext } from "./authContext";
@@ -36,6 +38,8 @@ import FriendsList from "./page/FriendsList";
 import PrivateRoute from "./components/PrivateRoute";
 import PublicRoute from './components/PublicRoute';
 
+import Demo from './components/demo';
+
 const useStyles = makeStyles((theme) => ({
   title: {
     flexGrow: 1,
@@ -44,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const drawerWidth = 170;
+const drawerWidth = 250;
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({
@@ -126,18 +130,25 @@ function App() {
                 edge="start"
                 sx={{ mr: 2, ...(open && { display: "none" }) }}
               >
-                <img src={MenuIcon} alt="アイコン" width="40" height="40" />
+                <ListIcon></ListIcon>
               </IconButton>
               <Typography
                 variant="h3"
                 noWrap
                 component="div"
                 className={classes.title}
+                class="st-Header_start" // 左よせ
               >
-                PUDDING
+                Pudding Profile
               </Typography>
+
+              {/* この辺にログアウトボタン欲しい */}
+
             </Toolbar>
           </AppBar>
+
+          {/* <Demo></Demo> */}
+          
           <Drawer
             sx={{
               width: drawerWidth,
@@ -172,8 +183,7 @@ function App() {
                     component={Link}
                     to="/"
                   >
-                    <img src={UserIcon} alt="アイコン" width="40" height="40" />
-                    マイページ
+                    <FaceIcon sx={{ mr: 2}} /> マイページ
                   </ListItemButton>
                 </List>
                 <List>
@@ -185,8 +195,7 @@ function App() {
                     component={Link}
                     to="/edit"
                   >
-                    <img src={EditIcon} alt="アイコン" width="40" height="40" />
-                    追加・編集
+                    <EditIcon sx={{ mr: 2}} /> 追加・編集
                   </ListItemButton>
                 </List>
                 <List>
@@ -196,13 +205,7 @@ function App() {
                     component={Link}
                     to="/friends"
                   >
-                    <img
-                      src={FriendsIcon}
-                      alt="アイコン"
-                      width="40"
-                      height="40"
-                    />
-                    友達
+                    <EmojiPeopleIcon sx={{ mr: 2}} /> 友達
                   </ListItemButton>
                 </List>
                 <List>
@@ -212,13 +215,7 @@ function App() {
                     component={Link}
                     to="/setting"
                   >
-                    <img
-                      src={SettingIcon}
-                      alt="アイコン"
-                      width="40"
-                      height="40"
-                    />
-                    設定
+                    <SettingsIcon sx={{ mr: 2}} /> 設定
                   </ListItemButton>
                 </List>
               </div>
