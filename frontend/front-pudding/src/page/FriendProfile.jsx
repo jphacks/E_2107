@@ -124,12 +124,15 @@ SimpleDialog.propTypes = {
   selectedValue: PropTypes.string.isRequired,
 };
 
-export default function Profile() {
+export default function FriendProfile() {
+	console.log("friends");
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [selectedValue, setSelectedValue] = React.useState(emails[1]);
   const [category, setCategory] = useState("");
   const history = useHistory();
+  const path = window.location.pathname;
+  const otherUid = path.split("/")[1];
 
   const handleClickOpen = (props) => {
     setCategory(props);
@@ -146,26 +149,20 @@ export default function Profile() {
     history.push("/signin");
   };
 
-  const [uid, setUid] = useState("");
   const [data, setData] = useState();
 
   useEffect(() => {
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        setUid(user.uid);
-      }
-    });
-    if (uid) {
+    if (otherUid) {
       db.collection("users")
-        .doc(uid)
+        .doc(otherUid)
         .get()
         .then((snapshots) => {
           const data = snapshots.data();
-          console.log(data.name);
           setData(data);
+		  console.log(data);
         });
     }
-  }, [uid]);
+  }, [otherUid]);
 
   return (
     <Grid
@@ -255,7 +252,7 @@ export default function Profile() {
                   handleLogout();
                 }}
               >
-              ログアウト
+                お気に入りに追加
               </Button>
               <Box
                 sx={{

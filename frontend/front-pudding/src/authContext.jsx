@@ -1,4 +1,3 @@
-import { setuid } from "process";
 import { createContext, useState, useContext, useEffect } from "react";
 import { auth } from "./config/firebase";
 
@@ -36,5 +35,4 @@ export function AuthProvider({ children }) {
 	  </AuthContext.Provider>
 	);
   }
-//   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
