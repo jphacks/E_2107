@@ -82,7 +82,6 @@ export default function SignIn() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 3 }}
-              onClick={useAuth}
             >
               Sign In
             </Button>
