@@ -5,7 +5,6 @@ import React, { useState, useEffect, useRef } from 'react';
 // import { useCookies } from 'react-cookie';
 // import { useForm } from "react-hook-form";
 import  { Link, useHistory } from 'react-router-dom';
-import { useAuth } from '../store/useAuth';
 
 // mui
 import Button from '@mui/material/Button';
