@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 // 認証系インポート
 // import { useCookies } from 'react-cookie';
 // import { useForm } from "react-hook-form";
-import  { Link, useHistory } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 
 // mui
 import Button from '@mui/material/Button';
@@ -15,10 +15,6 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-<<<<<<< HEAD
-
-=======
->>>>>>> master
 import { auth } from "../config/firebase";
 
 
@@ -85,10 +81,6 @@ export default function SignIn() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 3 }}
-<<<<<<< HEAD
-
-=======
->>>>>>> master
             >
               Sign In
             </Button>
