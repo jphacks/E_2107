@@ -21,8 +21,8 @@ import SkyImage from "../image/sky.jpeg";
 import GreenImage from "../image/green.jpeg";
 import ColorImage from "../image/color.jpeg";
 import { db } from "../config/firebase";
-import { addDoc, collection } from 'firebase/firestore';
-
+import { auth } from "../config/firebase";
+import { Link, useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -97,18 +97,10 @@ function SimpleDialog(props) {
       </DialogTitle>
       <DialogContent>
         <Box className={classes.dialog}>
-          {category === "born" && (
-            <Typography variant="h5">出身</Typography>
-          )}
-          {category === "job" && (
-            <Typography variant="h5">大学</Typography>
-          )}
-          {category === "hobby" && (
-            <Typography variant="h5">趣味</Typography>
-          )}
-          {category === "talent" && (
-            <Typography variant="h5">特技</Typography>
-          )}
+          {category === "born" && <Typography variant="h5">出身</Typography>}
+          {category === "job" && <Typography variant="h5">大学</Typography>}
+          {category === "hobby" && <Typography variant="h5">趣味</Typography>}
+          {category === "talent" && <Typography variant="h5">特技</Typography>}
           {!category && <Typography variant="h5">ありません</Typography>}
           {/* <Typography variant="h4">{data.born}</Typography>
         <Typography variant="h4">{data.hobby}</Typography> */}
@@ -129,7 +121,7 @@ export default function Profile() {
   const [open, setOpen] = React.useState(false);
   const [selectedValue, setSelectedValue] = React.useState(emails[1]);
   const [category, setCategory] = useState("");
-
+  const history = useHistory();
 
   const handleClickOpen = (props) => {
     setCategory(props);
@@ -141,25 +133,29 @@ export default function Profile() {
     setSelectedValue(value);
   };
 
-  useEffect(() => {
+  const handleLogout = () => {
+    auth.signOut();
+    history.push("/signin");
+  };
 
-      db.collection("users").add({
+  useEffect(() => {
+    db.collection("users")
+      .add({
         born: "Japan",
-        job : "student",
+        job: "student",
         hobby: "Tokyo",
         dream: "engineer",
         name: "higu",
         talent: "sports",
-        favorite_food: "pizza"
-    })
-    .then((docRef) => {
+        favorite_food: "pizza",
+      })
+      .then((docRef) => {
         console.log("Document written with ID: ", docRef.id);
-    })
-    .catch((error) => {
+      })
+      .catch((error) => {
         console.error("Error adding document: ", error);
-    });
+      });
   }, []);
-
 
   return (
     <Grid
@@ -240,7 +236,13 @@ export default function Profile() {
               src={HiguIcon}
               sx={{ width: 130, height: 130, marginBottom: 2 }}
             />
-            <Button variant="contained" color="secondary">
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={() => {
+                handleLogout();
+              }}
+            >
               お気に入りに追加
             </Button>
             <Box

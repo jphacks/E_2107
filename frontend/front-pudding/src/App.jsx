@@ -2,10 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./App.css";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 
-import Router from "./Router";
-import { useAuth } from "./store/useAuth";
-
-import { Link, useHistory } from "react-router-dom";
+import { Link, useHistory, withRouter } from "react-router-dom";
 
 import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -28,6 +25,16 @@ import SettingIcon from "./image/icons8-settings-64.png";
 import { makeStyles } from "@mui/styles";
 
 import { useAuthContext } from "./authContext";
+
+import SignIn from "./page/SignIn";
+import SignUp from "./page/SignUp";
+import Profile from "./page/Profile";
+import Setting from "./page/Setting";
+import EditProfile from "./page/EditProfile";
+import FriendsList from "./page/FriendsList";
+
+import PrivateRoute from "./components/PrivateRoute";
+import PublicRoute from './components/PublicRoute';
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -86,7 +93,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 }));
 
 function App() {
-  const user = useAuthContext();
+  const {user} = useAuthContext();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
   const [selectedIndex, setSelectedIndex] = React.useState(0);
@@ -161,7 +168,9 @@ function App() {
                 <List>
                   <ListItemButton
                     selected={selectedIndex === 0}
-                    onClick={(event) => handleListItemClick(event, 0)}
+                    onClick={(event) => {
+                      handleListItemClick(event, 0);
+                    }}
                     component={Link}
                     to="/"
                   >
@@ -225,7 +234,13 @@ function App() {
           </Drawer>
           <Main open={open}>
             <DrawerHeader />
-            <Router />
+            <PrivateRoute exact path="/" component={Profile} />
+          <PrivateRoute exact path="/setting" component={Setting} />
+          <PrivateRoute exact path="/edit" component={EditProfile} />
+          <PrivateRoute exact path="/friends" component={FriendsList} />
+          <PublicRoute exact path="/" component={SignUp} />
+          <PublicRoute path="/signin" exact component={SignIn} />
+          <PublicRoute path="/signup" component={SignUp} />
           </Main>
         </Box>
       </Switch>
@@ -233,4 +248,4 @@ function App() {
   );
 }
 
-export default App;
+export default withRouter(App);
