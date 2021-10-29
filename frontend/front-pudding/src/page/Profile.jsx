@@ -19,7 +19,7 @@ import DialogContent from "@mui/material/DialogContent";
 import HiguIcon from "../image/higuSample.jpg";
 import TwitterIcon from "../image/Twitter social icons - circle - blue.png";
 import InstaIcon from "../image/instagram.png";
-import FaceBookIcon from "../image/f_logo_RGB-Blue_100.png";
+import FaceBookIcon from "../image/github.png";
 import SkyImage from "../image/sky.jpeg";
 // import GreenImage from "../image/green.jpeg";
 // import ColorImage from "../image/color.jpeg";
@@ -101,7 +101,7 @@ function SimpleDialog(props) {
         {category === "favorite_food" && (
           <Typography variant="h4">特技</Typography>
         )}
-        {category === "dream" && <Typography variant="h4">特技</Typography>}
+        {category === "dream" && <Typography variant="h4">夢</Typography>}
         {category === "talent" && <Typography variant="h4">特技</Typography>}
       </DialogTitle>
       <DialogContent>
@@ -141,7 +141,6 @@ export default function Profile() {
   const [open, setOpen] = React.useState(false);
   const [selectedValue, setSelectedValue] = React.useState(emails[1]);
   const [category, setCategory] = useState("");
-  const history = useHistory();
 
   const handleClickOpen = (props) => {
     setCategory(props);
@@ -247,7 +246,7 @@ export default function Profile() {
                   marginBottom: 1,
                 }}
               >
-                {data.name}のページ
+                {data.name}<br/>のページ
               </Typography>
               <Avatar
                 alt="UserIcon"
@@ -264,7 +263,7 @@ export default function Profile() {
                 }}
               >
                 <a
-                  href={`https://twitter.com/github`}
+                  href={`https://twitter.com/${data.twitter}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -275,7 +274,7 @@ export default function Profile() {
                   />
                 </a>
                 <a
-                  href={`https://www.instagram.com/github`}
+                  href={`https://www.instagram.com/${data.insta}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -286,7 +285,7 @@ export default function Profile() {
                   />
                 </a>
                 <a
-                  href={`https://github.com/github`}
+                  href={`https://github.com/${data.github}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >

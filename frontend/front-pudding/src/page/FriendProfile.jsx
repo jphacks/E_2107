@@ -10,7 +10,7 @@ import Container from "@mui/material/Container";
 import HiguIcon from "../image/higuSample.jpg";
 import TwitterIcon from "../image/Twitter social icons - circle - blue.png";
 import InstaIcon from "../image/instagram.png";
-import FaceBookIcon from "../image/f_logo_RGB-Blue_100.png";
+import FaceBookIcon from "../image/github.png";
 
 import PropTypes from "prop-types";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -92,8 +92,11 @@ function SimpleDialog(props) {
         {category === "born" && <Typography variant="h4">出身</Typography>}
         {category === "job" && <Typography variant="h4">大学・職場</Typography>}
         {category === "hobby" && <Typography variant="h4">趣味</Typography>}
+        {category === "favorite_food" && (
+          <Typography variant="h4">特技</Typography>
+        )}
+        {category === "dream" && <Typography variant="h4">夢</Typography>}
         {category === "talent" && <Typography variant="h4">特技</Typography>}
-        {!category && <Typography variant="h4">ありません</Typography>}
       </DialogTitle>
       <DialogContent>
         <Box className={classes.dialog}>
@@ -106,23 +109,20 @@ function SimpleDialog(props) {
           {category === "hobby" && (
             <Typography variant="h5">{data.hobby}</Typography>
           )}
+          {category === "favorite_food" && (
+            <Typography variant="h5">{data.favorite_food}</Typography>
+          )}
+          {category === "dream" && (
+            <Typography variant="h5">{data.dream}</Typography>
+          )}
           {category === "talent" && (
             <Typography variant="h5">{data.talent}</Typography>
           )}
-          {!category && <Typography variant="h5">ありません</Typography>}
-          {/* <Typography variant="h4">{data.born}</Typography>
-        <Typography variant="h4">{data.hobby}</Typography> */}
         </Box>
       </DialogContent>
     </Dialog>
   );
 }
-
-SimpleDialog.propTypes = {
-  onClose: PropTypes.func.isRequired,
-  open: PropTypes.bool.isRequired,
-  selectedValue: PropTypes.string.isRequired,
-};
 
 export default function FriendProfile() {
   console.log("friends");
@@ -170,9 +170,9 @@ export default function FriendProfile() {
         .then((snapshot) => {
           snapshot.docs.forEach((doc) => {
             setDateId(doc.id);
-			console.log("get deteld")
+            console.log("get deteld");
             console.log(dateId);
-			setCliclked(true);
+            setCliclked(true);
           });
         })
         .catch((error) => {
@@ -235,7 +235,7 @@ export default function FriendProfile() {
             className={classes.outerCircle}
             onClick={() => handleClickOpen("job")}
           >
-            <Typography variant="h5">大学</Typography>
+            <Typography variant="h5">学校・仕事</Typography>
           </Box>
         </Container>
       </Grid>
@@ -310,39 +310,45 @@ export default function FriendProfile() {
                   alignItems: "center",
                 }}
               >
-                <a
-                  href={`https://twitter.com/github`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Avatar
-                    alt="UserIcon"
-                    src={TwitterIcon}
-                    sx={{ margin: 1, width: 50, height: 50 }}
-                  />
-                </a>
-                <a
-                  href={`https://www.instagram.com/github`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Avatar
-                    alt="UserIcon"
-                    src={InstaIcon}
-                    sx={{ margin: 1, width: 50, height: 50 }}
-                  />
-                </a>
-                <a
-                  href={`https://github.com/github`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Avatar
-                    alt="UserIcon"
-                    src={FaceBookIcon}
-                    sx={{ margin: 1, width: 50, height: 50 }}
-                  />
-                </a>
+                {data.twitter && (
+                  <a
+                    href={`https://twitter.com/${data.twitter}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Avatar
+                      alt="UserIcon"
+                      src={TwitterIcon}
+                      sx={{ margin: 1, width: 50, height: 50 }}
+                    />
+                  </a>
+                )}
+                {data.insta && (
+                  <a
+                    href={`https://www.instagram.com/${data.insta}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Avatar
+                      alt="UserIcon"
+                      src={InstaIcon}
+                      sx={{ margin: 1, width: 50, height: 50 }}
+                    />
+                  </a>
+                )}
+                {data.github && (
+                  <a
+                    href={`https://github.com/${data.github}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Avatar
+                      alt="UserIcon"
+                      src={FaceBookIcon}
+                      sx={{ margin: 1, width: 50, height: 50 }}
+                    />
+                  </a>
+                )}
               </Box>
             </Box>
           )}
@@ -359,7 +365,7 @@ export default function FriendProfile() {
         <Container fixed>
           <Box
             className={classes.outerCircle}
-            onClick={() => handleClickOpen("")}
+            onClick={() => handleClickOpen("favorite_food")}
           >
             <Typography variant="h5">好きな食べ物</Typography>
           </Box>
@@ -369,9 +375,9 @@ export default function FriendProfile() {
         <Container fixed>
           <Box
             className={classes.outerCircle}
-            onClick={() => handleClickOpen("")}
+            onClick={() => handleClickOpen("dream")}
           >
-            <Typography variant="h5">好きな曲</Typography>
+            <Typography variant="h5">夢</Typography>
           </Box>
         </Container>
       </Grid>
@@ -381,7 +387,7 @@ export default function FriendProfile() {
             className={classes.outerCircle}
             onClick={() => handleClickOpen("talent")}
           >
-            <Typography variant="h5">マイブーム</Typography>
+            <Typography variant="h5">特技</Typography>
           </Box>
         </Container>
       </Grid>
