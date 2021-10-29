@@ -30,9 +30,40 @@ import ButtonBase from '@mui/material/ButtonBase';
 // ---------------------------Profileのパーツの設定---------------------------------------
 const image = {
   url: 'SkyImage', // これを読み込ませたいがうまくいかない
-  title: 'Breakfast',
+  title: 'Born',
   width: '300px',
 };
+
+const image_born = {
+  url: 'Born', 
+  title: '',
+  width: '300px',
+}
+const image_job = {
+  url: '', 
+  title: 'School・Job',
+  width: '300px',
+}
+const image_hobby = {
+  url: '', 
+  title: 'Hobby',
+  width: '300px',
+}
+const image_favorite_food = {
+  url: '', 
+  title: 'Favorite Food',
+  width: '300px',
+}
+const image_dream = {
+  url: '', 
+  title: 'Dream',
+  width: '300px',
+}
+const image_talent = {
+  url: '', 
+  title: 'Talent',
+  width: '300px',
+}
 
 const ImageButton = styled(ButtonBase)(({ theme }) => ({
   position: 'relative',
@@ -286,7 +317,7 @@ export default function Profile() {
                   pb: (theme) => `calc(${theme.spacing(1)} + 6px)`,
                 }}
               >
-                出身
+                {image.title}
                 <ImageMarked className="MuiImageMarked-root" />
               </Typography>
             </Image>
@@ -317,7 +348,7 @@ export default function Profile() {
                   pb: (theme) => `calc(${theme.spacing(1)} + 6px)`,
                 }}
               >
-                大学
+                School・Job
                 <ImageMarked className="MuiImageMarked-root" />
               </Typography>
             </Image>
@@ -348,7 +379,7 @@ export default function Profile() {
                   pb: (theme) => `calc(${theme.spacing(1)} + 6px)`,
                 }}
               >
-                趣味
+                Hobby
                 <ImageMarked className="MuiImageMarked-root" />
               </Typography>
             </Image>
@@ -452,7 +483,7 @@ export default function Profile() {
       <Grid item md={4} xs={6} className={classes.top}>
         <Container fixed>
           <ImageButton
-            onClick={() => handleClickOpen("")}
+            onClick={() => handleClickOpen("favorite_food")}
             focusRipple
             key={image.title}
             style={{
@@ -473,7 +504,7 @@ export default function Profile() {
                   pb: (theme) => `calc(${theme.spacing(1)} + 6px)`,
                 }}
               >
-                好きな食べ物
+                Favorite Food
                 <ImageMarked className="MuiImageMarked-root" />
               </Typography>
             </Image>
@@ -483,7 +514,7 @@ export default function Profile() {
       <Grid item md={4} xs={6} className={classes.center}>
         <Container fixed>
           <ImageButton
-            onClick={() => handleClickOpen("")}
+            onClick={() => handleClickOpen("dream")}
             focusRipple
             key={image.title}
             style={{
@@ -504,7 +535,7 @@ export default function Profile() {
                   pb: (theme) => `calc(${theme.spacing(1)} + 6px)`,
                 }}
               >
-                好きな曲
+                Dream
                 <ImageMarked className="MuiImageMarked-root" />
               </Typography>
             </Image>
@@ -514,7 +545,7 @@ export default function Profile() {
       <Grid item md={4} xs={12} className={classes.top}>
         <Container fixed>
           <ImageButton
-            onClick={() => handleClickOpen("born")}
+            onClick={() => handleClickOpen("talent")}
             focusRipple
             key={image.title}
             style={{
@@ -535,7 +566,7 @@ export default function Profile() {
                   pb: (theme) => `calc(${theme.spacing(1)} + 6px)`,
                 }}
               >
-                マイブーム
+                  Talent
                 <ImageMarked className="MuiImageMarked-root" />
               </Typography>
             </Image>
