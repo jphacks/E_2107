@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./App.css";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 
-import { Link, useHistory, withRouter } from "react-router-dom";
+import { Link, useHistory, withRouter, Redirect } from "react-router-dom";
 
 // @mui
 import { styled, useTheme } from "@mui/material/styles";
@@ -26,6 +26,9 @@ import EditIcon from '@mui/icons-material/Edit';
 import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { makeStyles } from "@mui/styles";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
 
 // 認証系
 import { useAuthContext } from "./authContext";
@@ -34,21 +37,34 @@ import { useAuthContext } from "./authContext";
 import SignIn from "./page/SignIn";
 import SignUp from "./page/SignUp";
 import Profile from "./page/Profile";
-import Setting from "./page/Setting";
+import FriendProfile from "./page/FriendProfile";
+// import Setting from "./page/Setting";
 import EditProfile from "./page/EditProfile";
-import FriendsList from "./page/FriendsList";
 
 // ルーティング
 import PrivateRoute from "./components/PrivateRoute";
-import PublicRoute from './components/PublicRoute';
+import PublicRoute from "./components/PublicRoute";
+
+import { auth, db } from "./config/firebase";
+import ListItem from "@mui/material/ListItem";
+import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
+import ListItemText from "@mui/material/ListItemText";
 
 // import Demo from './components/demo';
+import HiguIcon from "./image/higuSample.jpg";
+import FriendsIcon from "./image/icons8-conference-64.png"
 
 const useStyles = makeStyles((theme) => ({
   title: {
     flexGrow: 1,
     textAlign: "center",
     color: "#555555",
+  },
+  Dialog: {
+    width: "300px",
+  },
+  list: {
+    height: "50px"
   },
 }));
 
@@ -100,13 +116,127 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   justifyContent: "flex-end",
 }));
 
+const UserList = ({ dateId, selfUid, followedUid }) => {
+  const classes = useStyles();
+  const [clicked, setCliclked] = useState(true);
+
+  const onRemoveFollow = (dateId) => {
+    setCliclked(false);
+    const followsRef = db.collection("follows");
+    followsRef.doc(dateId).delete();
+  };
+
+  const onFollow = (selfUid, followedUid) => {
+    setCliclked(true);
+    const followsRef = db.collection("follows").doc();
+    const userInitialData = {
+      following_uid: selfUid,
+      followed_uid: followedUid,
+      id: followsRef.id,
+    };
+    followsRef.set(userInitialData);
+  };
+  return (
+    <ListItemSecondaryAction>
+      {!clicked ? (
+        <Button
+          variant="outlined"
+          size="medium"
+          color="secondary"
+          onClick={() => onFollow(selfUid, followedUid)}
+        >
+          フォロー解除
+        </Button>
+      ) : (
+        <Button
+          variant="contained"
+          size="medium"
+          color="secondary"
+          onClick={() => onRemoveFollow(dateId)}
+        >
+          フォロー中
+        </Button>
+      )}
+    </ListItemSecondaryAction>
+  );
+};
+
+const UserFollowingList = ({ selfUid }) => {
+  const classes = useStyles();
+  const [followingUserDates, setFollowingUserDates] = useState([]);
+  const [followedUid, SetfollowedUid] = useState("");
+
+  useEffect(() => {
+    db.collection("follows")
+      .where("following_uid", "==", selfUid)
+      .get()
+      .then(async (snapshot) => {
+        console.log(snapshot);
+        snapshot.forEach((doc) => {
+          SetfollowedUid(doc.data().followed_uid);
+          const dateId = doc.data().id;
+          db.collection("users")
+            .doc(doc.data().followed_uid)
+            .get()
+            .then((snapshot) => {
+              console.log("match!");
+              const followingUser = snapshot.data();
+              const Userdate = {
+                name: followingUser.name,
+                // 入れれたら
+                // image: followingUser.image.path,
+                uid: followingUser.uid,
+                id: dateId,
+              };
+              setFollowingUserDates((date) => [...date, Userdate]);
+            });
+        });
+      });
+  }, [selfUid]);
+
+  return (
+    <Box m={2}>
+      <Typography variant="h5">友達一覧</Typography>
+      <List dense className={classes.root}>
+        {followingUserDates.length > 0 &&
+          followingUserDates.map((date, index) => {
+            const labelId = `checkbox-list-secondary-label-${index}`;
+            const dateId = date.id;
+            return (
+              <ListItem key={index} button className={classes.list}>
+                {/* 写真追加できたら */}
+                {/* <ListItemAvatar>
+                      <Avatar
+                        alt={`Avatar n°${index + 1}`}
+                        src={date.image}
+                        className={classes.avatar}
+                      />
+                    </ListItemAvatar> */}
+                <ListItemText id={labelId} primary={date.name} />
+                <UserList
+                  dateId={dateId}
+                  selfUid={selfUid}
+                  followedUid={followedUid}
+                />
+              </ListItem>
+            );
+          })}
+      </List>
+    </Box>
+  );
+};
+
 function App() {
-  const {user} = useAuthContext();
+  const { user } = useAuthContext();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   const classes = useStyles();
-  const history = useHistory();
+
+  const path = window.location.pathname;
+  const uid = path.split("/")[1];
+
+  const [selfUid, setSelfUid] = useState("");
 
   const handleListItemClick = (event, index) => {
     setSelectedIndex(index);
@@ -118,6 +248,25 @@ function App() {
 
   const handleDrawerClose = () => {
     setOpen(false);
+  };
+
+  // const path = window.location.pathname;
+  // const tmp = path.split("/")[1];
+
+  auth.onAuthStateChanged((user) => {
+    if (user) {
+      setSelfUid(user.uid);
+    }
+  });
+
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const handleClickOpen = () => {
+    setDialogOpen(true);
+  };
+
+  const handleClose = () => {
+    setDialogOpen(false);
   };
 
   return (
@@ -177,7 +326,67 @@ function App() {
             </DrawerHeader>
             <Divider />
             {user ? (
-              <div>
+              uid === selfUid ? (
+                <div>
+                  <List>
+                    <ListItemButton
+                      selected={selectedIndex === 0}
+                      onClick={(event) => {
+                        handleListItemClick(event, 0);
+                      }}
+                      component={Link}
+                      // to={{ pathname: "/" + selfUid }}
+                      to={"/" + selfUid + "/home"}
+                    >
+                      <img
+                        src={HiguIcon}
+                        alt="アイコン"
+                        width="40"
+                        height="40"
+                      />
+                      マイページ
+                    </ListItemButton>
+                  </List>
+                  <List>
+                    <ListItemButton
+                      selected={selectedIndex === 1}
+                      onClick={(event) => {
+                        handleListItemClick(event, 1);
+                      }}
+                      component={Link}
+                      to={"/" + selfUid + "/edit"}
+                    >
+                      <img
+                        src={EditIcon}
+                        alt="アイコン"
+                        width="40"
+                        height="40"
+                      />
+                      追加・編集
+                    </ListItemButton>
+                  </List>
+                  <List>
+                    <ListItemButton
+                      selected={selectedIndex === 2}
+                      onClick={(event) => {
+                        handleListItemClick(event, 2);
+                        handleClickOpen();
+                      }}
+                      // component={Link}
+                      // to={"/" + selfUid + "/friends"}
+                    >
+                      <img
+                        src={FriendsIcon}
+                        alt="アイコン"
+                        width="40"
+                        height="40"
+                      />
+                      友達
+                    </ListItemButton>
+                  </List>
+                </div>
+              ) : (
+                <>
                 <List>
                   <ListItemButton
                     selected={selectedIndex === 0}
@@ -222,7 +431,20 @@ function App() {
                     <SettingsIcon sx={{ mr: 2}} /> 設定
                   </ListItemButton>
                 </List>
-              </div>
+                <List>
+                  {selfUid && (
+                    <ListItemButton
+                      component={Link}
+                      to={{ pathname: "/" + selfUid + "/home" }}
+                    >
+                      友達のページです。
+                      <br />
+                      自分のページに戻る。
+                    </ListItemButton>
+                  )}
+                </List>
+                </>
+              )
             ) : (
               <List>
                 <ListItemButton component={Link} to="/signin">
@@ -231,15 +453,65 @@ function App() {
               </List>
             )}
           </Drawer>
+          <Dialog
+            open={dialogOpen}
+            onClose={handleClose}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <Box className={classes.Dialog}>
+              <UserFollowingList selfUid={selfUid} />
+            </Box>
+          </Dialog>
           <Main open={open}>
             <DrawerHeader />
-            <PrivateRoute exact path="/" component={Profile} />
-          <PrivateRoute exact path="/setting" component={Setting} />
-          <PrivateRoute exact path="/edit" component={EditProfile} />
-          <PrivateRoute exact path="/friends" component={FriendsList} />
-          <PublicRoute exact path="/" component={SignUp} />
-          <PublicRoute path="/signin" exact component={SignIn} />
-          <PublicRoute path="/signup" component={SignUp} />
+
+            {user ? (
+              uid !== selfUid ? (
+                <PrivateRoute
+                  exact
+                  path={"/" + uid + "/home"}
+                  component={FriendProfile}
+                />
+              ) : (
+                <PrivateRoute
+                  exact
+                  path={"/" + selfUid + "/home"}
+                  component={Profile}
+                />
+              )
+            ) : (
+              // <Redirect
+              //   exact
+              //   path="/"
+              //   to={{ pathname: "/" + selfUid + "/home"}}
+              //   component={Profile}
+              // />
+              <></>
+            )}
+            {/* "/"の時のリダイレクト不可 */}
+            {/* {uid === selfUid && (
+              <Redirect
+                exact
+                path="/"
+                to={"/" + selfUid + "/home"}
+                component={Profile}
+              />
+            )} */}
+            <PrivateRoute
+              exact
+              path={"/" + selfUid + "/home"}
+              component={Profile}
+            />
+            <PrivateRoute
+              exact
+              path={"/" + selfUid + "/edit"}
+              component={EditProfile}
+            />
+
+            <PublicRoute exact path="/" component={SignIn} />
+            <PublicRoute path="/signin" exact component={SignIn} />
+            <PublicRoute path="/signup" component={SignUp} />
           </Main>
         </Box>
       </Switch>
