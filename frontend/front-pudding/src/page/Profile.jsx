@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 
-import Logout from './Logout'
+import Logout from "./Logout";
 
 // mui
 import { makeStyles } from "@mui/styles";
@@ -98,8 +98,11 @@ function SimpleDialog(props) {
         {category === "born" && <Typography variant="h4">出身</Typography>}
         {category === "job" && <Typography variant="h4">大学・職場</Typography>}
         {category === "hobby" && <Typography variant="h4">趣味</Typography>}
+        {category === "favorite_food" && (
+          <Typography variant="h4">特技</Typography>
+        )}
+        {category === "dream" && <Typography variant="h4">特技</Typography>}
         {category === "talent" && <Typography variant="h4">特技</Typography>}
-        {!category && <Typography variant="h4">ありません</Typography>}
       </DialogTitle>
       <DialogContent>
         <Box className={classes.dialog}>
@@ -112,12 +115,15 @@ function SimpleDialog(props) {
           {category === "hobby" && (
             <Typography variant="h5">{data.hobby}</Typography>
           )}
+          {category === "favorite_food" && (
+            <Typography variant="h5">{data.favorite_food}</Typography>
+          )}
+          {category === "dream" && (
+            <Typography variant="h5">{data.dream}</Typography>
+          )}
           {category === "talent" && (
             <Typography variant="h5">{data.talent}</Typography>
           )}
-          {!category && <Typography variant="h5">ありません</Typography>}
-          {/* <Typography variant="h4">{data.born}</Typography>
-        <Typography variant="h4">{data.hobby}</Typography> */}
         </Box>
       </DialogContent>
     </Dialog>
@@ -203,7 +209,7 @@ export default function Profile() {
             className={classes.outerCircle}
             onClick={() => handleClickOpen("job")}
           >
-            <Typography variant="h5">大学</Typography>
+            <Typography variant="h5">学校・仕事</Typography>
           </Box>
         </Container>
       </Grid>
@@ -307,7 +313,7 @@ export default function Profile() {
         <Container fixed>
           <Box
             className={classes.outerCircle}
-            onClick={() => handleClickOpen("")}
+            onClick={() => handleClickOpen("favorite_food")}
           >
             <Typography variant="h5">好きな食べ物</Typography>
           </Box>
@@ -317,9 +323,9 @@ export default function Profile() {
         <Container fixed>
           <Box
             className={classes.outerCircle}
-            onClick={() => handleClickOpen("")}
+            onClick={() => handleClickOpen("dream")}
           >
-            <Typography variant="h5">好きな曲</Typography>
+            <Typography variant="h5">夢</Typography>
           </Box>
         </Container>
       </Grid>
@@ -329,7 +335,7 @@ export default function Profile() {
             className={classes.outerCircle}
             onClick={() => handleClickOpen("talent")}
           >
-            <Typography variant="h5">マイブーム</Typography>
+            <Typography variant="h5">特技</Typography>
           </Box>
         </Container>
       </Grid>
