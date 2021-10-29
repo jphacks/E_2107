@@ -12,7 +12,7 @@ const Logout = ()=>{
     const handleLogout = () => {
         auth.signOut();
         history.push("/signin");
-      };
+    };
 
     return(
         <Button
