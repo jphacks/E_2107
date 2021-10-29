@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 
+// page
+import Attribute from './Attribute'
 import Logout from "./Logout";
 
 // mui
@@ -30,9 +32,6 @@ import PropTypes from "prop-types";
 import { db } from "../config/firebase";
 import { auth } from "../config/firebase";
 
-import { styled } from '@mui/material/styles';
-import ButtonBase from '@mui/material/ButtonBase';
-
 // ---------------------------Profileのパーツの設定---------------------------------------
 const image = {
   url: 'SkyImage', // これを読み込ませたいがうまくいかない
@@ -41,99 +40,35 @@ const image = {
 };
 
 const image_born = {
-  url: 'Born', 
+  url: 'Born',
   title: '',
   width: '300px',
 }
 const image_job = {
-  url: '', 
+  url: '',
   title: 'School・Job',
   width: '300px',
 }
 const image_hobby = {
-  url: '', 
+  url: '',
   title: 'Hobby',
   width: '300px',
 }
 const image_favorite_food = {
-  url: '', 
+  url: '',
   title: 'Favorite Food',
   width: '300px',
 }
 const image_dream = {
-  url: '', 
+  url: '',
   title: 'Dream',
   width: '300px',
 }
 const image_talent = {
-  url: '', 
+  url: '',
   title: 'Talent',
   width: '300px',
 }
-
-const ImageButton = styled(ButtonBase)(({ theme }) => ({
-  position: 'relative',
-  height: 200,
-  [theme.breakpoints.down('sm')]: {
-    width: '100% !important', // Overrides inline-style
-    height: 100,
-  },
-  '&:hover, &.Mui-focusVisible': {
-    zIndex: 1,
-    '& .MuiImageBackdrop-root': {
-      opacity: 0.15,
-    },
-    '& .MuiImageMarked-root': {
-      opacity: 0,
-    },
-    '& .MuiTypography-root': {
-      border: '4px solid currentColor',
-    },
-  },
-}));
-
-const ImageSrc = styled('span')({
-  position: 'absolute',
-  left: 0,
-  right: 0,
-  top: 0,
-  bottom: 0,
-  backgroundSize: 'cover',
-  backgroundPosition: 'center 40%',
-});
-
-const Image = styled('span')(({ theme }) => ({
-  position: 'absolute',
-  left: 0,
-  right: 0,
-  top: 0,
-  bottom: 0,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  color: theme.palette.common.white,
-}));
-
-const ImageBackdrop = styled('span')(({ theme }) => ({
-  position: 'absolute',
-  left: 0,
-  right: 0,
-  top: 0,
-  bottom: 0,
-  backgroundColor: theme.palette.common.black,
-  opacity: 0.4,
-  transition: theme.transitions.create('opacity'),
-}));
-
-const ImageMarked = styled('span')(({ theme }) => ({
-  height: 3,
-  width: 18,
-  backgroundColor: theme.palette.common.white,
-  position: 'absolute',
-  bottom: -2,
-  left: 'calc(50% - 9px)',
-  transition: theme.transitions.create('opacity'),
-}));
 
 // -------------------------------Profileのパーツの設定 ここまで---------------------------------
 
@@ -300,97 +235,29 @@ export default function Profile() {
       />
       <Grid item md={4} xs={6} className={classes.bottom}>
         <Container fixed>
-          <ImageButton
-            onClick={() => handleClickOpen("born")}
-            focusRipple
-            key={image.title}
-            style={{
-              width: image.width,
-            }}
-          >
-            <ImageSrc style={{ backgroundImage: `url(${SkyImage})` }} />
-            <ImageBackdrop className="MuiImageBackdrop-root" />
-            <Image>
-              <Typography
-                component="span"
-                variant="h5"
-                color="inherit"
-                sx={{
-                  position: 'relative',
-                  p: 4,
-                  pt: 2,
-                  pb: (theme) => `calc(${theme.spacing(1)} + 6px)`,
-                }}
-              >
-                {image.title}
-                <ImageMarked className="MuiImageMarked-root" />
-              </Typography>
-            </Image>
-          </ImageButton>
+        <Attribute
+          attr="出身"
+          image={}
+          handleClickOpen={handleClickOpen}
+        />
         </Container>
       </Grid>
       <Grid item md={4} xs={6} className={classes.center}>
         <Container fixed>
-          <ImageButton
-            onClick={() => handleClickOpen("job")}
-            focusRipple
-            key={image.title}
-            style={{
-              width: image.width,
-            }}
-          >
-
-            <ImageSrc style={{ backgroundImage: `url(${image.url})` }} />
-            <ImageBackdrop className="MuiImageBackdrop-root" />
-            <Image>
-              <Typography
-                component="span"
-                variant="h5"
-                color="inherit"
-                sx={{
-                  position: 'relative',
-                  p: 4,
-                  pt: 2,
-                  pb: (theme) => `calc(${theme.spacing(1)} + 6px)`,
-                }}
-              >
-                School・Job
-                <ImageMarked className="MuiImageMarked-root" />
-              </Typography>
-            </Image>
-          </ImageButton>
-
+          <Attribute
+            attr="大学"
+            image={}
+            handleClickOpen={handleClickOpen}
+          />
         </Container>
       </Grid>
       <Grid item md={4} xs={6} className={classes.bottom}>
         <Container fixed>
-          <ImageButton
-            onClick={() => handleClickOpen("hobby")}
-            focusRipple
-            key={image.title}
-            style={{
-              width: image.width,
-            }}
-          >
-            <ImageSrc style={{ backgroundImage: `url(${image.url})` }} />
-            <ImageBackdrop className="MuiImageBackdrop-root" />
-            <Image>
-              <Typography
-                component="span"
-                variant="h5"
-                color="inherit"
-                sx={{
-                  position: 'relative',
-                  p: 4,
-                  pt: 2,
-                  pb: (theme) => `calc(${theme.spacing(1)} + 6px)`,
-                }}
-              >
-                Hobby
-                <ImageMarked className="MuiImageMarked-root" />
-              </Typography>
-            </Image>
-          </ImageButton>
+          <Attribute
+            attr="趣味"
+            image={}
+            handleClickOpen={handleClickOpen}
+          />
         </Container>
       </Grid>
       <Grid item md={4} xs={6} className={classes.center}>
@@ -481,100 +348,29 @@ export default function Profile() {
       </Grid>
       <Grid item md={4} xs={6} className={classes.top}>
         <Container fixed>
-          <ImageButton
-            onClick={() => handleClickOpen("favorite_food")}
-            focusRipple
-            key={image.title}
-            style={{
-              width: image.width,
-            }}
-
-          >
-            <ImageSrc style={{ backgroundImage: `url(${image.url})` }} />
-            <ImageBackdrop className="MuiImageBackdrop-root" />
-            <Image>
-              <Typography
-                component="span"
-                variant="h5"
-                color="inherit"
-                sx={{
-                  position: 'relative',
-                  p: 4,
-                  pt: 2,
-                  pb: (theme) => `calc(${theme.spacing(1)} + 6px)`,
-                }}
-              >
-                Favorite Food
-                <ImageMarked className="MuiImageMarked-root" />
-              </Typography>
-            </Image>
-          </ImageButton>
+        <Attribute
+          attr="好きな食べ物"
+          image={}
+          handleClickOpen={handleClickOpen}
+        />
         </Container>
       </Grid>
       <Grid item md={4} xs={6} className={classes.center}>
         <Container fixed>
-
-          <ImageButton
-            onClick={() => handleClickOpen("dream")}
-            focusRipple
-            key={image.title}
-            style={{
-              width: image.width,
-            }}
-          >
-            <ImageSrc style={{ backgroundImage: `url(${image.url})` }} />
-            <ImageBackdrop className="MuiImageBackdrop-root" />
-            <Image>
-              <Typography
-                component="span"
-                variant="h5"
-                color="inherit"
-                sx={{
-                  position: 'relative',
-                  p: 4,
-                  pt: 2,
-                  pb: (theme) => `calc(${theme.spacing(1)} + 6px)`,
-                }}
-              >
-                Dream
-                <ImageMarked className="MuiImageMarked-root" />
-              </Typography>
-            </Image>
-          </ImageButton>
-
+          <Attribute
+            attr="好きな曲"
+            image={}
+            handleClickOpen={handleClickOpen}
+          />
         </Container>
       </Grid>
       <Grid item md={4} xs={12} className={classes.top}>
         <Container fixed>
-          <ImageButton
-            onClick={() => handleClickOpen("talent")}
-            focusRipple
-            key={image.title}
-            style={{
-              width: image.width,
-            }}
-          >
-
-            <ImageSrc style={{ backgroundImage: `url(${SkyImage})` }} />
-            <ImageBackdrop className="MuiImageBackdrop-root" />
-            <Image>
-              <Typography
-                component="span"
-                variant="h5"
-                color="inherit"
-                sx={{
-                  position: 'relative',
-                  p: 4,
-                  pt: 2,
-                  pb: (theme) => `calc(${theme.spacing(1)} + 6px)`,
-                }}
-              >
-                  Talent
-                <ImageMarked className="MuiImageMarked-root" />
-              </Typography>
-            </Image>
-          </ImageButton>
-
+          <Attribute
+            attr="マイブーム"
+            image={}
+            handleClickOpen={handleClickOpen}
+          />
         </Container>
       </Grid>
     </Grid>
