@@ -1,32 +1,35 @@
+// react
 import React, { useState, useEffect } from "react";
-import Button from "@mui/material/Button";
-import CssBaseline from "@mui/material/CssBaseline";
-import TextField from "@mui/material/TextField";
-import Grid from "@mui/material/Grid";
+
+// mui
+import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
-import { makeStyles } from "@mui/styles";
+import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
+import CssBaseline from "@mui/material/CssBaseline";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import Grid from "@mui/material/Grid";
+import ListItem from "@mui/material/ListItem";
+import { makeStyles } from "@mui/styles";
+import Paper from "@mui/material/Paper";
+import Stack from "@mui/material/Stack";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-
-import Avatar from "@mui/material/Avatar";
-import HiguIcon from "../image/higuSample.jpg";
-
-import DialogTitle from "@mui/material/DialogTitle";
-import Dialog from "@mui/material/Dialog";
-import ListItem from "@mui/material/ListItem";
-
-import SkyImage from "../image/sky.jpeg";
-import GreenImage from "../image/green.jpeg";
-import ColorImage from "../image/color.jpeg";
-
-import Stack from "@mui/material/Stack";
+import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+
+// firebase
 import { db } from "../config/firebase";
 import { auth } from "../config/firebase";
+
+// img
+import ColorImage from "../image/color.jpeg";
+import GreenImage from "../image/green.jpeg";
+import HiguIcon from "../image/higuSample.jpg";
+import SkyImage from "../image/sky.jpeg";
 
 const drawerWidth = 240;
 
@@ -152,11 +155,11 @@ export default function EditProfile() {
       name,
       talent,
       favorite_food,
-      icon,
+      // icon
       twitter,
       insta,
       github,
-      selectedValue,
+      // selectedValue
     } = event.target.elements;
     auth.onAuthStateChanged((user) => {
       db.collection("users").doc(user.uid).update({

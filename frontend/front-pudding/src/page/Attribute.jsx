@@ -7,12 +7,12 @@ import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 
 const Attribute = (props)=>{
-    ```
-    必要な引数
-        - attr(属性) ex.)出身地/特技/好きな曲 etc...
-        - image(画像素材) title, url,width, heightが必要
-        - handleClickOpen ={handleClickOpen} 固定で良い
-    ```
+
+    // 必要な引数
+    //     - attr(属性) ex.)出身地/特技/好きな曲 etc...
+    //     - image(画像素材) title, url,width, heightが必要
+    //     - handleClickOpen ={handleClickOpen} 固定で良い
+
     const ImageButton = styled(ButtonBase)(({ theme }) => ({
         position: 'relative',
         height: 200,
@@ -80,15 +80,15 @@ const Attribute = (props)=>{
     return (
         <>
             <ImageButton
-                onClick={() => props.handleClickOpen(props.attr)}
+                onClick={() => props.handleClickOpen(props.key)}
                 focusRipple
-                key={props.image.title}
+                key={props.title}
                 style={{
-                    height: props.image.height,
-                    width: props.image.width,
+                    height: "225px",
+                    width: "150px",
                 }}
             >
-                <ImageSrc style={{ backgroundImage: `url(${props.image.url})` }} />
+                <ImageSrc style={{ backgroundImage: `url(%PUBLIC_URL%/${props.url})` }} />
                 <ImageBackdrop className="MuiImageBackdrop-root" />
                 <Image>
                     <Typography
@@ -102,7 +102,7 @@ const Attribute = (props)=>{
                         pb: (theme) => `calc(${theme.spacing(1)} + 6px)`,
                         }}
                     >
-                        {props.attr}
+                        {props.name}
                         <ImageMarked className="MuiImageMarked-root" />
                     </Typography>
                 </Image>

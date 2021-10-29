@@ -13,9 +13,13 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Avatar from "@mui/material/Avatar";
 import Container from "@mui/material/Container";
-import DialogTitle from "@mui/material/DialogTitle";
-import Dialog from "@mui/material/Dialog";
-import DialogContent from "@mui/material/DialogContent";
+
+// firebase
+import { db } from "../config/firebase";
+import { auth } from "../config/firebase";
+
+// page
+import SimpleDialog from './SimpleDialog'
 
 // img
 import HiguIcon from "../image/higuSample.jpg";
@@ -26,49 +30,15 @@ import SkyImage from "../image/sky.jpeg";
 // import GreenImage from "../image/green.jpeg";
 // import ColorImage from "../image/color.jpeg";
 
+// config　
+import categoryDictionaly from '../config/dictionaly'
+
 import PropTypes from "prop-types";
 
-// firebase
-import { db } from "../config/firebase";
-import { auth } from "../config/firebase";
 
 // ---------------------------Profileのパーツの設定---------------------------------------
-const image = {
-  url: 'SkyImage', // これを読み込ませたいがうまくいかない
-  title: 'Born',
-  width: '300px',
-};
 
-const image_born = {
-  url: 'Born',
-  title: '',
-  width: '300px',
-}
-const image_job = {
-  url: '',
-  title: 'School・Job',
-  width: '300px',
-}
-const image_hobby = {
-  url: '',
-  title: 'Hobby',
-  width: '300px',
-}
-const image_favorite_food = {
-  url: '',
-  title: 'Favorite Food',
-  width: '300px',
-}
-const image_dream = {
-  url: '',
-  title: 'Dream',
-  width: '300px',
-}
-const image_talent = {
-  url: '',
-  title: 'Talent',
-  width: '300px',
-}
+// categoryDictionalyから辞書を引っ張り、Attribute.jsxにて対応する文字列を引っ張っています。
 
 // -------------------------------Profileのパーツの設定 ここまで---------------------------------
 
@@ -126,52 +96,6 @@ const useStyles = makeStyles((theme) => ({
 
 const emails = ["username@gmail.com", "user02@gmail.com"];
 
-function SimpleDialog(props) {
-  const classes = useStyles();
-  const { onClose, selectedValue, open, category, data } = props;
-
-  const handleClose = () => {
-    onClose(selectedValue);
-  };
-
-  return (
-    <Dialog onClose={handleClose} open={open}>
-      <DialogTitle className={classes.dialogtitle}>
-        {category === "born" && <Typography variant="h4">出身</Typography>}
-        {category === "job" && <Typography variant="h4">大学・職場</Typography>}
-        {category === "hobby" && <Typography variant="h4">趣味</Typography>}
-        {category === "favorite_food" && (
-          <Typography variant="h4">特技</Typography>
-        )}
-        {category === "dream" && <Typography variant="h4">夢</Typography>}
-        {category === "talent" && <Typography variant="h4">特技</Typography>}
-      </DialogTitle>
-      <DialogContent>
-        <Box className={classes.dialog}>
-          {category === "born" && (
-            <Typography variant="h5">{data.born}</Typography>
-          )}
-          {category === "job" && (
-            <Typography variant="h5">{data.job}</Typography>
-          )}
-          {category === "hobby" && (
-            <Typography variant="h5">{data.hobby}</Typography>
-          )}
-          {category === "favorite_food" && (
-            <Typography variant="h5">{data.favorite_food}</Typography>
-          )}
-          {category === "dream" && (
-            <Typography variant="h5">{data.dream}</Typography>
-          )}
-          {category === "talent" && (
-            <Typography variant="h5">{data.talent}</Typography>
-          )}
-        </Box>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
 SimpleDialog.propTypes = {
   onClose: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired,
@@ -182,10 +106,10 @@ export default function Profile() {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [selectedValue, setSelectedValue] = React.useState(emails[1]);
-  const [category, setCategory] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   const handleClickOpen = (props) => {
-    setCategory(props);
+    setSelectedCategory(props);
     setOpen(true);
   };
 
@@ -227,17 +151,15 @@ export default function Profile() {
       }}
     >
       <SimpleDialog
-        selectedValue={selectedValue}
         open={open}
-        onClose={handleClose}
-        category={category}
+        onClose={handleClose(selectedValue)}
+        selectedCategory={selectedCategory}
         data={data}
       />
       <Grid item md={4} xs={6} className={classes.bottom}>
         <Container fixed>
         <Attribute
-          attr="出身"
-          image={}
+          dict={categoryDictionaly[0]}
           handleClickOpen={handleClickOpen}
         />
         </Container>
@@ -245,8 +167,7 @@ export default function Profile() {
       <Grid item md={4} xs={6} className={classes.center}>
         <Container fixed>
           <Attribute
-            attr="大学"
-            image={}
+            dict={categoryDictionaly[1]}
             handleClickOpen={handleClickOpen}
           />
         </Container>
@@ -254,8 +175,7 @@ export default function Profile() {
       <Grid item md={4} xs={6} className={classes.bottom}>
         <Container fixed>
           <Attribute
-            attr="趣味"
-            image={}
+            dict={categoryDictionaly[2]}
             handleClickOpen={handleClickOpen}
           />
         </Container>
@@ -349,8 +269,7 @@ export default function Profile() {
       <Grid item md={4} xs={6} className={classes.top}>
         <Container fixed>
         <Attribute
-          attr="好きな食べ物"
-          image={}
+          dict={categoryDictionaly[3]}
           handleClickOpen={handleClickOpen}
         />
         </Container>
@@ -358,8 +277,7 @@ export default function Profile() {
       <Grid item md={4} xs={6} className={classes.center}>
         <Container fixed>
           <Attribute
-            attr="好きな曲"
-            image={}
+            dict={categoryDictionaly[4]}
             handleClickOpen={handleClickOpen}
           />
         </Container>
@@ -367,8 +285,7 @@ export default function Profile() {
       <Grid item md={4} xs={12} className={classes.top}>
         <Container fixed>
           <Attribute
-            attr="マイブーム"
-            image={}
+            dict={categoryDictionaly[5]}
             handleClickOpen={handleClickOpen}
           />
         </Container>
