@@ -28,7 +28,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import { makeStyles } from "@mui/styles";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
+// import DialogActions from "@mui/material/DialogActions";
 
 // 認証系
 import { useAuthContext } from "./authContext";
@@ -40,6 +40,7 @@ import Profile from "./page/Profile";
 import FriendProfile from "./page/FriendProfile";
 // import Setting from "./page/Setting";
 import EditProfile from "./page/EditProfile";
+import Logout from "./page/Logout"
 
 // ルーティング
 import PrivateRoute from "./components/PrivateRoute";
@@ -295,12 +296,10 @@ function App() {
                 Pudding Profile
               </Typography>
 
-              {/* この辺にログアウトボタン欲しい */}
+              <Logout />
 
             </Toolbar>
           </AppBar>
-
-          {/* <Demo></Demo> */}
 
           <Drawer
             sx={{
@@ -387,62 +386,65 @@ function App() {
                 </div>
               ) : (
                 <>
-                <List>
-                  <ListItemButton
-                    selected={selectedIndex === 0}
-                    onClick={(event) => {
-                      handleListItemClick(event, 0);
-                    }}
-                    component={Link}
-                    to="/"
-                  >
-                    <FaceIcon sx={{ mr: 2}} /> マイページ
-                  </ListItemButton>
-                </List>
-                <List>
-                  <ListItemButton
-                    selected={selectedIndex === 1}
-                    onClick={(event) => {
-                      handleListItemClick(event, 1);
-                    }}
-                    component={Link}
-                    to="/edit"
-                  >
-                    <EditIcon sx={{ mr: 2}} /> 追加・編集
-                  </ListItemButton>
-                </List>
-                <List>
-                  <ListItemButton
-                    selected={selectedIndex === 2}
-                    onClick={(event) => handleListItemClick(event, 2)}
-                    component={Link}
-                    to="/friends"
-                  >
-                    <EmojiPeopleIcon sx={{ mr: 2}} /> 友達
-                  </ListItemButton>
-                </List>
-                <List>
-                  <ListItemButton
-                    selected={selectedIndex === 3}
-                    onClick={(event) => handleListItemClick(event, 3)}
-                    component={Link}
-                    to="/setting"
-                  >
-                    <SettingsIcon sx={{ mr: 2}} /> 設定
-                  </ListItemButton>
-                </List>
-                <List>
-                  {selfUid && (
+                  <List>
                     <ListItemButton
+                      selected={selectedIndex === 0}
+                      onClick={(event) => {
+                        handleListItemClick(event, 0);
+                      }}
                       component={Link}
-                      to={{ pathname: "/" + selfUid + "/home" }}
+                      to="/"
                     >
-                      友達のページです。
-                      <br />
-                      自分のページに戻る。
+                      <FaceIcon sx={{ mr: 2}} /> マイページ
                     </ListItemButton>
-                  )}
-                </List>
+                  </List>
+                  <List>
+                    <ListItemButton
+                      selected={selectedIndex === 1}
+                      onClick={(event) => {
+                        handleListItemClick(event, 1);
+                      }}
+                      component={Link}
+                      to="/edit"
+                    >
+                      <EditIcon sx={{ mr: 2}} /> 追加・編集
+                    </ListItemButton>
+                  </List>
+                  <List>
+                    <ListItemButton
+                      selected={selectedIndex === 2}
+                      onClick={(event) => handleListItemClick(event, 2)}
+                      component={Link}
+                      to="/friends"
+                    >
+                      <EmojiPeopleIcon sx={{ mr: 2}} /> 友達
+                    </ListItemButton>
+                  </List>
+                  <List>
+                    <ListItemButton
+                      selected={selectedIndex === 3}
+                      onClick={(event) => handleListItemClick(event, 3)}
+                      component={Link}
+                      to="/setting"
+                    >
+                      <SettingsIcon sx={{ mr: 2}} /> 設定
+                    </ListItemButton>
+                  </List>
+                  <List>
+                    <Logout />
+                  </List>
+                  <List>
+                    {selfUid && (
+                      <ListItemButton
+                        component={Link}
+                        to={{ pathname: "/" + selfUid + "/home" }}
+                      >
+                        友達のページです。
+                        <br />
+                        自分のページに戻る。
+                      </ListItemButton>
+                    )}
+                  </List>
                 </>
               )
             ) : (
