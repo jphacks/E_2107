@@ -1,28 +1,34 @@
+// react
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { useHistory } from "react-router-dom";
+
+import Logout from "./Logout";
+
+// mui
 import { makeStyles } from "@mui/styles";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
-import HiguIcon from "../image/higuSample.jpg";
-import TwitterIcon from "../image/Twitter social icons - circle - blue.png";
-import InstaIcon from "../image/instagram.png";
-import FaceBookIcon from "../image/f_logo_RGB-Blue_100.png";
-
-import PropTypes from "prop-types";
 import DialogTitle from "@mui/material/DialogTitle";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 
+// img
+import HiguIcon from "../image/higuSample.jpg";
+import TwitterIcon from "../image/Twitter social icons - circle - blue.png";
+import InstaIcon from "../image/instagram.png";
+import FaceBookIcon from "../image/github.png";
 import SkyImage from "../image/sky.jpeg";
-import GreenImage from "../image/green.jpeg";
-import ColorImage from "../image/color.jpeg";
+// import GreenImage from "../image/green.jpeg";
+// import ColorImage from "../image/color.jpeg";
+
+import PropTypes from "prop-types";
+
+// firebase
 import { db } from "../config/firebase";
 import { auth } from "../config/firebase";
-import { Link, useHistory } from "react-router-dom";
 
 import { styled } from '@mui/material/styles';
 import ButtonBase from '@mui/material/ButtonBase';
@@ -168,8 +174,11 @@ function SimpleDialog(props) {
         {category === "born" && <Typography variant="h4">出身</Typography>}
         {category === "job" && <Typography variant="h4">大学・職場</Typography>}
         {category === "hobby" && <Typography variant="h4">趣味</Typography>}
+        {category === "favorite_food" && (
+          <Typography variant="h4">特技</Typography>
+        )}
+        {category === "dream" && <Typography variant="h4">夢</Typography>}
         {category === "talent" && <Typography variant="h4">特技</Typography>}
-        {!category && <Typography variant="h4">ありません</Typography>}
       </DialogTitle>
       <DialogContent>
         <Box className={classes.dialog}>
@@ -182,12 +191,15 @@ function SimpleDialog(props) {
           {category === "hobby" && (
             <Typography variant="h5">{data.hobby}</Typography>
           )}
+          {category === "favorite_food" && (
+            <Typography variant="h5">{data.favorite_food}</Typography>
+          )}
+          {category === "dream" && (
+            <Typography variant="h5">{data.dream}</Typography>
+          )}
           {category === "talent" && (
             <Typography variant="h5">{data.talent}</Typography>
           )}
-          {!category && <Typography variant="h5">ありません</Typography>}
-          {/* <Typography variant="h4">{data.born}</Typography>
-        <Typography variant="h4">{data.hobby}</Typography> */}
         </Box>
       </DialogContent>
     </Dialog>
@@ -205,7 +217,6 @@ export default function Profile() {
   const [open, setOpen] = React.useState(false);
   const [selectedValue, setSelectedValue] = React.useState(emails[1]);
   const [category, setCategory] = useState("");
-  const history = useHistory();
 
   const handleClickOpen = (props) => {
     setCategory(props);
@@ -215,11 +226,6 @@ export default function Profile() {
   const handleClose = (value) => {
     setOpen(false);
     setSelectedValue(value);
-  };
-
-  const handleLogout = () => {
-    auth.signOut();
-    history.push("/signin");
   };
 
   const [uid, setUid] = useState("");
@@ -237,7 +243,6 @@ export default function Profile() {
         .get()
         .then((snapshots) => {
           const data = snapshots.data();
-          // console.log(data.name);
           setData(data);
         });
     }
@@ -303,6 +308,7 @@ export default function Profile() {
               width: image.width,
             }}
           >
+
             <ImageSrc style={{ backgroundImage: `url(${image.url})` }} />
             <ImageBackdrop className="MuiImageBackdrop-root" />
             <Image>
@@ -322,6 +328,7 @@ export default function Profile() {
               </Typography>
             </Image>
           </ImageButton>
+
         </Container>
       </Grid>
       <Grid item md={4} xs={6} className={classes.bottom}>
@@ -380,22 +387,14 @@ export default function Profile() {
                   marginBottom: 1,
                 }}
               >
-                {data.name}のページ
+                {data.name}<br/>のページ
               </Typography>
               <Avatar
                 alt="UserIcon"
                 src={HiguIcon}
                 sx={{ width: 130, height: 130, marginBottom: 2 }}
               />
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={() => {
-                  handleLogout();
-                }}
-              >
-                お気に入りに追加
-              </Button>
+              <Logout />
               <Box
                 sx={{
                   marginTop: 2,
@@ -405,7 +404,7 @@ export default function Profile() {
                 }}
               >
                 <a
-                  href={`https://twitter.com/github`}
+                  href={`https://twitter.com/${data.twitter}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -416,7 +415,7 @@ export default function Profile() {
                   />
                 </a>
                 <a
-                  href={`https://www.instagram.com/github`}
+                  href={`https://www.instagram.com/${data.insta}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -427,7 +426,7 @@ export default function Profile() {
                   />
                 </a>
                 <a
-                  href={`https://github.com/github`}
+                  href={`https://github.com/${data.github}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -458,6 +457,7 @@ export default function Profile() {
             style={{
               width: image.width,
             }}
+
           >
             <ImageSrc style={{ backgroundImage: `url(${image.url})` }} />
             <ImageBackdrop className="MuiImageBackdrop-root" />
@@ -482,6 +482,7 @@ export default function Profile() {
       </Grid>
       <Grid item md={4} xs={6} className={classes.center}>
         <Container fixed>
+
           <ImageButton
             onClick={() => handleClickOpen("")}
             focusRipple
@@ -509,6 +510,7 @@ export default function Profile() {
               </Typography>
             </Image>
           </ImageButton>
+
         </Container>
       </Grid>
       <Grid item md={4} xs={12} className={classes.top}>
@@ -521,6 +523,7 @@ export default function Profile() {
               width: image.width,
             }}
           >
+
             <ImageSrc style={{ backgroundImage: `url(${SkyImage})` }} />
             <ImageBackdrop className="MuiImageBackdrop-root" />
             <Image>
@@ -540,6 +543,7 @@ export default function Profile() {
               </Typography>
             </Image>
           </ImageButton>
+
         </Container>
       </Grid>
     </Grid>

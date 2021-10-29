@@ -7,16 +7,14 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { useAuthContext } from "../authContext";
 import { auth } from "../config/firebase";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { db } from "../config/firebase";
 
 const theme = createTheme();
 
 export default function SignUp() {
   const history = useHistory();
-  const [error, setError] = React.useState("");
   const handleSubmit = (event) => {
     event.preventDefault();
     const { email, password, name } = event.target.elements;
@@ -24,6 +22,7 @@ export default function SignUp() {
       auth.createUserWithEmailAndPassword(email.value, password.value);
       auth.onAuthStateChanged((user) => {
         if (user) {
+          const uid = user.uid
           const userInitialData = {
             born: "",
             job: "",
@@ -32,18 +31,17 @@ export default function SignUp() {
             name: name.value,
             talent: "",
             favorite_food: "",
-            uid: user.uid,
+            uid: uid,
           };
           db.collection("users")
-            .doc(user.uid)
+            .doc(uid)
             .set(userInitialData)
             .then(async () => {
-              history.push("/");
+              history.push("/" + uid + "/home");
             });
         }
       });
     } catch (error) {
-      setError(error.message);
     }
   };
 

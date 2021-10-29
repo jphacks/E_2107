@@ -2,43 +2,57 @@ import React, { useState, useEffect } from "react";
 import "./App.css";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 
-import { Link, useHistory, withRouter } from "react-router-dom";
+import { Link, useHistory, withRouter, Redirect } from "react-router-dom";
 
-import { styled, useTheme } from "@mui/material/styles";
+// @mui
 import Box from "@mui/material/Box";
-import Drawer from "@mui/material/Drawer";
-import CssBaseline from "@mui/material/CssBaseline";
-import Toolbar from "@mui/material/Toolbar";
-import List from "@mui/material/List";
-import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
-import IconButton from "@mui/material/IconButton";
 import Button from "@mui/material/Button";
-import Stack from '@mui/material/Stack';
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import MuiAppBar from "@mui/material/AppBar";
+import Dialog from "@mui/material/Dialog";
+// import DialogActions from "@mui/material/DialogActions";
+import CssBaseline from "@mui/material/CssBaseline";
+import Divider from "@mui/material/Divider";
+import Drawer from "@mui/material/Drawer";
+import EditIcon from "@mui/icons-material/Edit";
+import EmojiPeopleIcon from "@mui/icons-material/EmojiPeople";
+import FaceIcon from "@mui/icons-material/Face";
+import IconButton from "@mui/material/IconButton";
+import List from "@mui/material/List";
 import ListItemButton from "@mui/material/ListItemButton";
-import ListIcon from '@mui/icons-material/List';
-import FaceIcon from '@mui/icons-material/Face';
-import EditIcon from '@mui/icons-material/Edit';
-import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
-import SettingsIcon from '@mui/icons-material/Settings';
 import { makeStyles } from "@mui/styles";
+import SettingsIcon from "@mui/icons-material/Settings";
+// import Stack from '@mui/material/Stack';
+import { styled, useTheme } from "@mui/material/styles";
+import Typography from "@mui/material/Typography";
 
+// 認証系
 import { useAuthContext } from "./authContext";
 
+// ページインポート
+import EditProfile from "./page/EditProfile";
+import FriendProfile from "./page/FriendProfile";
+import Header from "./page/Header"
+import Logout from "./page/Logout";
+import Profile from "./page/Profile";
 import SignIn from "./page/SignIn";
 import SignUp from "./page/SignUp";
-import Profile from "./page/Profile";
-import Setting from "./page/Setting";
-import EditProfile from "./page/EditProfile";
-import FriendsList from "./page/FriendsList";
+// import Setting from "./page/Setting";
 
+// ルーティング
 import PrivateRoute from "./components/PrivateRoute";
-import PublicRoute from './components/PublicRoute';
+import PublicRoute from "./components/PublicRoute";
 
-import Demo from './components/demo';
+import { auth, db } from "./config/firebase";
+import ListItem from "@mui/material/ListItem";
+import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
+import ListItemText from "@mui/material/ListItemText";
+
+// import Demo from './components/demo';
+// import HiguIcon from "./image/higuSample.jpg";
+// import FriendsIcon from "./image/icons8-conference-64.png";
+
+const drawerWidth = 250;
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -46,9 +60,14 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     color: "#555555",
   },
+  Dialog: {
+    width: "300px",
+  },
+  list: {
+    height: "50px",
+  },
 }));
 
-const drawerWidth = 250;
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({
@@ -68,24 +87,6 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   })
 );
 
-const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== "open",
-})(({ theme, open }) => ({
-  height: 64,
-  transition: theme.transitions.create(["margin", "width"], {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  ...(open && {
-    height: 64,
-    width: `calc(100% - ${drawerWidth}px)`,
-    marginLeft: `${drawerWidth}px`,
-    transition: theme.transitions.create(["margin", "width"], {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  }),
-}));
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
@@ -96,13 +97,126 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   justifyContent: "flex-end",
 }));
 
+const UserList = ({ dataId, selfUid, followedUid }) => {
+  const [clicked, setCliclked] = useState(true);
+
+  const onRemoveFollow = (dataId) => {
+    setCliclked(false);
+    const followsRef = db.collection("follows");
+    followsRef.doc(dataId).delete();
+  };
+
+  const onFollow = (selfUid, followedUid) => {
+    setCliclked(true);
+    const followsRef = db.collection("follows").doc();
+    const userInitialData = {
+      following_uid: selfUid,
+      followed_uid: followedUid,
+      id: followsRef.id,
+    };
+    followsRef.set(userInitialData);
+  };
+  return (
+    <ListItemSecondaryAction>
+      {!clicked ? (
+        <Button
+          variant="outlined"
+          size="medium"
+          color="secondary"
+          onClick={() => onFollow(selfUid, followedUid)}
+        >
+          フォロー解除
+        </Button>
+      ) : (
+        <Button
+          variant="contained"
+          size="medium"
+          color="secondary"
+          onClick={() => onRemoveFollow(dataId)}
+        >
+          フォロー中
+        </Button>
+      )}
+    </ListItemSecondaryAction>
+  );
+};
+
+const UserFollowingList = ({ selfUid }) => {
+  const classes = useStyles();
+  const [followingUserDates, setFollowingUserDates] = useState([]);
+  const [followedUid, SetfollowedUid] = useState("");
+
+  useEffect(() => {
+    db.collection("follows")
+      .where("following_uid", "==", selfUid)
+      .get()
+      .then(async (snapshot) => {
+        console.log(snapshot);
+        snapshot.forEach((doc) => {
+          SetfollowedUid(doc.data().followed_uid);
+          const dataId = doc.data().id;
+          db.collection("users")
+            .doc(doc.data().followed_uid)
+            .get()
+            .then((snapshot) => {
+              console.log("match!");
+              const followingUser = snapshot.data();
+              const Userdata = {
+                name: followingUser.name,
+                // 入れれたら
+                // image: followingUser.image.path,
+                uid: followingUser.uid,
+                id: dataId,
+              };
+              setFollowingUserDates((data) => [...data, Userdata]);
+            });
+        });
+      });
+  }, [selfUid]);
+
+  return (
+    <Box m={2}>
+      <Typography variant="h5">お気に入りリスト</Typography>
+      <List dense className={classes.root}>
+        {followingUserDates.length > 0 &&
+          followingUserDates.map((data, index) => {
+            const labelId = `checkbox-list-secondary-label-${index}`;
+            const dataId = data.id;
+            return (
+              <ListItem key={index} button className={classes.list} component={Link} to={"/" + data.uid + "/home"}>
+                {/* 写真追加できたら */}
+                {/* <ListItemAvatar>
+                      <Avatar
+                        alt={`Avatar n°${index + 1}`}
+                        src={data.image}
+                        className={classes.avatar}
+                      />
+                    </ListItemAvatar> */}
+                <ListItemText id={labelId} primary={data.name} />
+                <UserList
+                  dataId={dataId}
+                  selfUid={selfUid}
+                  followedUid={followedUid}
+                />
+              </ListItem>
+            );
+          })}
+      </List>
+    </Box>
+  );
+};
+
 function App() {
-  const {user} = useAuthContext();
+  const { user } = useAuthContext();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   const classes = useStyles();
-  const history = useHistory();
+
+  const path = window.location.pathname;
+  const uid = path.split("/")[1];
+
+  const [selfUid, setSelfUid] = useState("");
 
   const handleListItemClick = (event, index) => {
     setSelectedIndex(index);
@@ -116,39 +230,38 @@ function App() {
     setOpen(false);
   };
 
+  // const path = window.location.pathname;
+  // const tmp = path.split("/")[1];
+
+  auth.onAuthStateChanged((user) => {
+    if (user) {
+      setSelfUid(user.uid);
+    }
+  });
+
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const handleClickOpen = () => {
+    setDialogOpen(true);
+  };
+
+  const handleClose = () => {
+    setDialogOpen(false);
+  };
+
   return (
     <BrowserRouter>
       <Switch>
         <Box sx={{ display: "flex" }}>
           <CssBaseline />
-          <AppBar position="fixed" open={open} color="transparent">
-            <Toolbar>
-              <IconButton
-                color="inherit"
-                aria-label="open drawer"
-                onClick={handleDrawerOpen}
-                edge="start"
-                sx={{ mr: 2, ...(open && { display: "none" }) }}
-              >
-                <ListIcon></ListIcon>
-              </IconButton>
-              <Typography
-                variant="h3"
-                noWrap
-                component="div"
-                className={classes.title}
-                class="st-Header_start" // 左よせ
-              >
-                Pudding Profile
-              </Typography>
-
-              {/* この辺にログアウトボタン欲しい */}
-
-            </Toolbar>
-          </AppBar>
-
-          {/* <Demo></Demo> */}
-          
+          {/* ヘッダー */}
+          <Header
+            classes={classes}
+            drawerWidth={drawerWidth}
+            handleDrawerOpen={handleDrawerOpen}
+            open={open}
+            user={user}
+          />
           <Drawer
             sx={{
               width: drawerWidth,
@@ -173,52 +286,69 @@ function App() {
             </DrawerHeader>
             <Divider />
             {user ? (
-              <div>
-                <List>
-                  <ListItemButton
-                    selected={selectedIndex === 0}
-                    onClick={(event) => {
-                      handleListItemClick(event, 0);
-                    }}
-                    component={Link}
-                    to="/"
-                  >
-                    <FaceIcon sx={{ mr: 2}} /> マイページ
-                  </ListItemButton>
-                </List>
-                <List>
-                  <ListItemButton
-                    selected={selectedIndex === 1}
-                    onClick={(event) => {
-                      handleListItemClick(event, 1);
-                    }}
-                    component={Link}
-                    to="/edit"
-                  >
-                    <EditIcon sx={{ mr: 2}} /> 追加・編集
-                  </ListItemButton>
-                </List>
-                <List>
-                  <ListItemButton
-                    selected={selectedIndex === 2}
-                    onClick={(event) => handleListItemClick(event, 2)}
-                    component={Link}
-                    to="/friends"
-                  >
-                    <EmojiPeopleIcon sx={{ mr: 2}} /> 友達
-                  </ListItemButton>
-                </List>
-                <List>
-                  <ListItemButton
-                    selected={selectedIndex === 3}
-                    onClick={(event) => handleListItemClick(event, 3)}
-                    component={Link}
-                    to="/setting"
-                  >
-                    <SettingsIcon sx={{ mr: 2}} /> 設定
-                  </ListItemButton>
-                </List>
-              </div>
+              // 自分のページの場合
+              uid === selfUid ? (
+                <div>
+                  <List>
+                    <ListItemButton
+                      selected={selectedIndex === 0}
+                      onClick={(event) => {
+                        handleListItemClick(event, 0);
+                      }}
+                      component={Link}
+                      // to={{ pathname: "/" + selfUid }}
+                      to={"/" + selfUid + "/home"}
+                    >
+                      <FaceIcon sx={{ mr: 2 }} />
+                      マイページ
+                    </ListItemButton>
+                  </List>
+                  <List>
+                    <ListItemButton
+                      selected={selectedIndex === 1}
+                      onClick={(event) => {
+                        handleListItemClick(event, 1);
+                      }}
+                      component={Link}
+                      to={"/" + selfUid + "/edit"}
+                    >
+                      <EditIcon sx={{ mr: 2 }} />
+                      追加・編集
+                    </ListItemButton>
+                  </List>
+                  <List>
+                    <ListItemButton
+                      selected={selectedIndex === 2}
+                      onClick={(event) => {
+                        handleListItemClick(event, 2);
+                        handleClickOpen();
+                      }}
+                    >
+                      <EmojiPeopleIcon sx={{ mr: 2 }} /> お気に入りリスト
+                    </ListItemButton>
+                  </List>
+                  {/* ログアウトボタン */}
+                  <Logout />
+                </div>
+              ) : (
+                // フレンドのページの場合
+                <>
+                  <List>
+                    {selfUid && (
+                      <ListItemButton
+                        component={Link}
+                        to={{ pathname: "/" + selfUid + "/home" }}
+                      >
+                        友達のページです。
+                        <br />
+                        自分のページに戻る。
+                      </ListItemButton>
+                    )}
+                  </List>
+                  {/* ログアウトボタン */}
+                  <Logout />
+                </>
+              )
             ) : (
               <List>
                 <ListItemButton component={Link} to="/signin">
@@ -227,15 +357,65 @@ function App() {
               </List>
             )}
           </Drawer>
+          <Dialog
+            open={dialogOpen}
+            onClose={handleClose}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <Box className={classes.Dialog}>
+              <UserFollowingList selfUid={selfUid} />
+            </Box>
+          </Dialog>
           <Main open={open}>
             <DrawerHeader />
-            <PrivateRoute exact path="/" component={Profile} />
-          <PrivateRoute exact path="/setting" component={Setting} />
-          <PrivateRoute exact path="/edit" component={EditProfile} />
-          <PrivateRoute exact path="/friends" component={FriendsList} />
-          <PublicRoute exact path="/" component={SignUp} />
-          <PublicRoute path="/signin" exact component={SignIn} />
-          <PublicRoute path="/signup" component={SignUp} />
+
+            {user ? (
+              uid !== selfUid ? (
+                <PrivateRoute
+                  exact
+                  path={"/" + uid + "/home"}
+                  component={FriendProfile}
+                />
+              ) : (
+                <PrivateRoute
+                  exact
+                  path={"/" + selfUid + "/home"}
+                  component={Profile}
+                />
+              )
+            ) : (
+              // <Redirect
+              //   exact
+              //   path="/"
+              //   to={{ pathname: "/" + selfUid + "/home"}}
+              //   component={Profile}
+              // />
+              <></>
+            )}
+            {/* "/"の時のリダイレクト不可 */}
+            {/* {uid === selfUid && (
+              <Redirect
+                exact
+                path="/"
+                to={"/" + selfUid + "/home"}
+                component={Profile}
+              />
+            )} */}
+            {/* <PrivateRoute
+              exact
+              path={"/" + selfUid + "/home"}
+              component={Profile}
+            /> */}
+            <PrivateRoute
+              exact
+              path={"/" + selfUid + "/edit"}
+              component={EditProfile}
+            />
+
+            <PublicRoute exact path="/" component={SignIn} />
+            <PublicRoute path="/signin" exact component={SignIn} />
+            <PublicRoute path="/signup" component={SignUp} />
           </Main>
         </Box>
       </Switch>
