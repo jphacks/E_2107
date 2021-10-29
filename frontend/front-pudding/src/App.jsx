@@ -28,7 +28,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import { makeStyles } from "@mui/styles";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
+// import DialogActions from "@mui/material/DialogActions";
 
 // 認証系
 import { useAuthContext } from "./authContext";
@@ -40,6 +40,7 @@ import Profile from "./page/Profile";
 import FriendProfile from "./page/FriendProfile";
 // import Setting from "./page/Setting";
 import EditProfile from "./page/EditProfile";
+import Logout from "./page/Logout"
 
 // ルーティング
 import PrivateRoute from "./components/PrivateRoute";
@@ -294,12 +295,10 @@ function App() {
               >
                 Pudding Profile
               </Typography>
-
-              {/* この辺にログアウトボタン欲しい */}
+              {/* ログアウトボタン */}
+              <Logout />
             </Toolbar>
           </AppBar>
-
-          {/* <Demo></Demo> */}
 
           <Drawer
             sx={{
@@ -325,6 +324,7 @@ function App() {
             </DrawerHeader>
             <Divider />
             {user ? (
+
               uid === selfUid ? (
                 <div>
                   <List>
@@ -367,20 +367,24 @@ function App() {
                       <EmojiPeopleIcon sx={{ mr: 2 }} /> 友達
                     </ListItemButton>
                   </List>
+                  <Logout />
                 </div>
               ) : (
-                <List>
-                  {selfUid && (
-                    <ListItemButton
-                      component={Link}
-                      to={{ pathname: "/" + selfUid + "/home" }}
-                    >
-                      友達のページです。
-                      <br />
-                      自分のページに戻る。
-                    </ListItemButton>
-                  )}
-                </List>
+                <>
+                  <List>
+                    {selfUid && (
+                      <ListItemButton
+                        selected={selectedIndex === 2}
+                        onClick={(event) => handleListItemClick(event, 2)}
+                        component={Link}
+                        to="/friends"
+                      >
+                        <EmojiPeopleIcon sx={{ mr: 2}} /> 友達
+                      </ListItemButton>
+                    )}
+                  </List>
+                  <Logout />
+                </>
               )
             ) : (
               <List>
