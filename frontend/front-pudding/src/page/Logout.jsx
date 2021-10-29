@@ -19,7 +19,7 @@ const Logout = ()=>{
             variant="contained"
             color="secondary"
             onClick={() => {
-            handleLogout();
+                handleLogout();
             }}
         >
             ログアウト
