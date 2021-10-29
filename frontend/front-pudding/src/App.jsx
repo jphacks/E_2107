@@ -23,6 +23,9 @@ import EditIcon from "./image/icons8-edit-64.png";
 import FriendsIcon from "./image/icons8-conference-64.png";
 import SettingIcon from "./image/icons8-settings-64.png";
 import { makeStyles } from "@mui/styles";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
 
 import { useAuthContext } from "./authContext";
 
@@ -32,18 +35,26 @@ import Profile from "./page/Profile";
 import FriendProfile from "./page/FriendProfile";
 // import Setting from "./page/Setting";
 import EditProfile from "./page/EditProfile";
-import FriendsList from "./page/FriendsList";
 
 import PrivateRoute from "./components/PrivateRoute";
 import PublicRoute from "./components/PublicRoute";
 
-import { auth } from "./config/firebase";
+import { auth, db } from "./config/firebase";
+import ListItem from "@mui/material/ListItem";
+import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
+import ListItemText from "@mui/material/ListItemText";
 
 const useStyles = makeStyles((theme) => ({
   title: {
     flexGrow: 1,
     textAlign: "center",
     color: "#555555",
+  },
+  Dialog: {
+    width: "300px",
+  },
+  list: {
+    height: "50px"
   },
 }));
 
@@ -95,14 +106,122 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   justifyContent: "flex-end",
 }));
 
+const UserList = ({ dateId, selfUid, followedUid }) => {
+  const classes = useStyles();
+  const [clicked, setCliclked] = useState(true);
+
+  const onRemoveFollow = (dateId) => {
+    setCliclked(false);
+    const followsRef = db.collection("follows");
+    followsRef.doc(dateId).delete();
+  };
+
+  const onFollow = (selfUid, followedUid) => {
+    setCliclked(true);
+    const followsRef = db.collection("follows").doc();
+    const userInitialData = {
+      following_uid: selfUid,
+      followed_uid: followedUid,
+      id: followsRef.id,
+    };
+    followsRef.set(userInitialData);
+  };
+  return (
+    <ListItemSecondaryAction>
+      {!clicked ? (
+        <Button
+          variant="outlined"
+          size="medium"
+          color="secondary"
+          onClick={() => onFollow(selfUid, followedUid)}
+        >
+          フォロー解除
+        </Button>
+      ) : (
+        <Button
+          variant="contained"
+          size="medium"
+          color="secondary"
+          onClick={() => onRemoveFollow(dateId)}
+        >
+          フォロー中
+        </Button>
+      )}
+    </ListItemSecondaryAction>
+  );
+};
+
+const UserFollowingList = ({ selfUid }) => {
+  const classes = useStyles();
+  const [followingUserDates, setFollowingUserDates] = useState([]);
+  const [followedUid, SetfollowedUid] = useState("");
+
+  useEffect(() => {
+    db.collection("follows")
+      .where("following_uid", "==", selfUid)
+      .get()
+      .then(async (snapshot) => {
+        console.log(snapshot);
+        snapshot.forEach((doc) => {
+          SetfollowedUid(doc.data().followed_uid);
+          const dateId = doc.data().id;
+          db.collection("users")
+            .doc(doc.data().followed_uid)
+            .get()
+            .then((snapshot) => {
+              console.log("match!");
+              const followingUser = snapshot.data();
+              const Userdate = {
+                name: followingUser.name,
+                // 入れれたら
+                // image: followingUser.image.path,
+                uid: followingUser.uid,
+                id: dateId,
+              };
+              setFollowingUserDates((date) => [...date, Userdate]);
+            });
+        });
+      });
+  }, [selfUid]);
+
+  return (
+    <Box m={2}>
+      <Typography variant="h5">友達一覧</Typography>
+      <List dense className={classes.root}>
+        {followingUserDates.length > 0 &&
+          followingUserDates.map((date, index) => {
+            const labelId = `checkbox-list-secondary-label-${index}`;
+            const dateId = date.id;
+            return (
+              <ListItem key={index} button className={classes.list}>
+                {/* 写真追加できたら */}
+                {/* <ListItemAvatar>
+                      <Avatar
+                        alt={`Avatar n°${index + 1}`}
+                        src={date.image}
+                        className={classes.avatar}
+                      />
+                    </ListItemAvatar> */}
+                <ListItemText id={labelId} primary={date.name} />
+                <UserList
+                  dateId={dateId}
+                  selfUid={selfUid}
+                  followedUid={followedUid}
+                />
+              </ListItem>
+            );
+          })}
+      </List>
+    </Box>
+  );
+};
+
 function App() {
   const { user } = useAuthContext();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   const classes = useStyles();
-  // const [uid, setUid] = useState("");
-  // const [otherUid, setOtherUid] = React.useState("");
 
   const path = window.location.pathname;
   const uid = path.split("/")[1];
@@ -123,7 +242,6 @@ function App() {
 
   // const path = window.location.pathname;
   // const tmp = path.split("/")[1];
-  console.log(uid);
 
   auth.onAuthStateChanged((user) => {
     if (user) {
@@ -131,17 +249,15 @@ function App() {
     }
   });
 
-  // useEffect(() => {
-  //   return () => {
-  //     auth.onAuthStateChanged((user) => {
-  //       if (user) {
-  //         setSelfUid(user.uid);
-  //       }
-  //     });
-  //     console.log("uid ->" + uid);
-  //     console.log("other ->" + selfUid);
-  //   };
-  // }, []);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const handleClickOpen = () => {
+    setDialogOpen(true);
+  };
+
+  const handleClose = () => {
+    setDialogOpen(false);
+  };
 
   return (
     <BrowserRouter>
@@ -235,9 +351,12 @@ function App() {
                   <List>
                     <ListItemButton
                       selected={selectedIndex === 2}
-                      onClick={(event) => handleListItemClick(event, 2)}
-                      component={Link}
-                      to={"/" + selfUid + "/friends"}
+                      onClick={(event) => {
+                        handleListItemClick(event, 2);
+                        handleClickOpen();
+                      }}
+                      // component={Link}
+                      // to={"/" + selfUid + "/friends"}
                     >
                       <img
                         src={FriendsIcon}
@@ -271,6 +390,16 @@ function App() {
               </List>
             )}
           </Drawer>
+          <Dialog
+            open={dialogOpen}
+            onClose={handleClose}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <Box className={classes.Dialog}>
+              <UserFollowingList selfUid={selfUid} />
+            </Box>
+          </Dialog>
           <Main open={open}>
             <DrawerHeader />
 
@@ -315,11 +444,6 @@ function App() {
               exact
               path={"/" + selfUid + "/edit"}
               component={EditProfile}
-            />
-            <PrivateRoute
-              exact
-              path={"/" + selfUid + "/friends"}
-              component={FriendsList}
             />
 
             <PublicRoute exact path="/" component={SignIn} />
