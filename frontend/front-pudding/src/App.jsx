@@ -295,6 +295,7 @@ function App() {
               >
                 Pudding Profile
               </Typography>
+              {/* ログアウトボタン */}
               <Logout />
             </Toolbar>
           </AppBar>
@@ -323,6 +324,7 @@ function App() {
             </DrawerHeader>
             <Divider />
             {user ? (
+
               uid === selfUid ? (
                 <div>
                   <List>
@@ -365,20 +367,24 @@ function App() {
                       <EmojiPeopleIcon sx={{ mr: 2 }} /> 友達
                     </ListItemButton>
                   </List>
+                  <Logout />
                 </div>
               ) : (
-                <List>
-                  {selfUid && (
-                    <ListItemButton
-                      selected={selectedIndex === 2}
-                      onClick={(event) => handleListItemClick(event, 2)}
-                      component={Link}
-                      to="/friends"
-                    >
-                      <EmojiPeopleIcon sx={{ mr: 2}} /> 友達
-                    </ListItemButton>
-                  )}
-                </List>
+                <>
+                  <List>
+                    {selfUid && (
+                      <ListItemButton
+                        selected={selectedIndex === 2}
+                        onClick={(event) => handleListItemClick(event, 2)}
+                        component={Link}
+                        to="/friends"
+                      >
+                        <EmojiPeopleIcon sx={{ mr: 2}} /> 友達
+                      </ListItemButton>
+                    )}
+                  </List>
+                  <Logout />
+                </>
               )
             ) : (
               <List>
