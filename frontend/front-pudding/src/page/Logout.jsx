@@ -1,3 +1,4 @@
+import React from 'react'
 import { useHistory } from 'react-router-dom';
 
 // mui
@@ -15,15 +16,17 @@ const Logout = ()=>{
     };
 
     return(
-        <Button
-            variant="contained"
-            color="secondary"
-            onClick={() => {
-                handleLogout();
-            }}
-        >
-            ログアウト
-        </Button>
+        <>
+            <Button
+                variant="contained"
+                color="secondary"
+                onClick={() => {
+                    handleLogout();
+                }}
+            >
+                ログアウト
+            </Button>
+        </>
     )
 }
 
