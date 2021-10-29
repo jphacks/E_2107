@@ -101,7 +101,7 @@ function SimpleDialog(props) {
         {category === "favorite_food" && (
           <Typography variant="h4">特技</Typography>
         )}
-        {category === "dream" && <Typography variant="h4">特技</Typography>}
+        {category === "dream" && <Typography variant="h4">夢</Typography>}
         {category === "talent" && <Typography variant="h4">特技</Typography>}
       </DialogTitle>
       <DialogContent>
@@ -246,7 +246,7 @@ export default function Profile() {
                   marginBottom: 1,
                 }}
               >
-                {data.name}のページ
+                {data.name}<br/>のページ
               </Typography>
               <Avatar
                 alt="UserIcon"
