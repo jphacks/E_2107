@@ -125,7 +125,6 @@ function SimpleDialog(props) {
 }
 
 export default function FriendProfile() {
-  console.log("friends");
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [selectedValue, setSelectedValue] = React.useState(emails[1]);
@@ -152,8 +151,24 @@ export default function FriendProfile() {
     }
   });
 
+  const Rendering = () => {
+    db.collection("follows")
+        .where("following_uid", "==", selfUid)
+        .where("followed_uid", "==", otherUid)
+        .get()
+        .then((snapshot) => {
+          snapshot.docs.forEach((doc) => {
+            const tmp = doc.data().id;
+            setCliclked(true);
+            setDateId(tmp);
+            console.log(dateId);
+            console.log(tmp);
+          });
+        });
+  }
+
   const [data, setData] = useState();
-  useEffect(() => {
+  useEffect(() =>  {
     if (otherUid) {
       db.collection("users")
         .doc(otherUid)
@@ -161,25 +176,10 @@ export default function FriendProfile() {
         .then((snapshots) => {
           const data = snapshots.data();
           setData(data);
-          console.log(data);
-        });
-      db.collection("follows")
-        .where("following_uid", "==", selfUid)
-        .where("followed_uid", "==", otherUid)
-        .get()
-        .then((snapshot) => {
-          snapshot.docs.forEach((doc) => {
-            setDateId(doc.id);
-            console.log("get deteld");
-            console.log(dateId);
-            setCliclked(true);
-          });
-        })
-        .catch((error) => {
-          console.error("Error removing document: ", error);
         });
     }
-  }, []);
+    Rendering();
+  }, [selfUid]);
 
   const onFollow = () => {
     setCliclked(true);
