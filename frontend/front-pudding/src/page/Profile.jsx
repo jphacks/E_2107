@@ -21,8 +21,8 @@ import TwitterIcon from "../image/Twitter social icons - circle - blue.png";
 import InstaIcon from "../image/instagram.png";
 import FaceBookIcon from "../image/f_logo_RGB-Blue_100.png";
 import SkyImage from "../image/sky.jpeg";
-import GreenImage from "../image/green.jpeg";
-import ColorImage from "../image/color.jpeg";
+// import GreenImage from "../image/green.jpeg";
+// import ColorImage from "../image/color.jpeg";
 
 import PropTypes from "prop-types";
 
