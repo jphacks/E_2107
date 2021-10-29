@@ -162,7 +162,6 @@ export default function Profile() {
         .get()
         .then((snapshots) => {
           const data = snapshots.data();
-          console.log(data.name);
           setData(data);
         });
     }

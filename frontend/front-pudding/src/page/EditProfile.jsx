@@ -174,7 +174,6 @@ export default function EditProfile() {
         .get()
         .then((snapshots) => {
           const data = snapshots.data();
-          console.log(data.name);
           setData(data);
         });
     }
