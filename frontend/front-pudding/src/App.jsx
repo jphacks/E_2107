@@ -20,11 +20,11 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import MuiAppBar from "@mui/material/AppBar";
 import ListItemButton from "@mui/material/ListItemButton";
-import ListIcon from '@mui/icons-material/List';
-import FaceIcon from '@mui/icons-material/Face';
-import EditIcon from '@mui/icons-material/Edit';
-import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
-import SettingsIcon from '@mui/icons-material/Settings';
+import ListIcon from "@mui/icons-material/List";
+import FaceIcon from "@mui/icons-material/Face";
+import EditIcon from "@mui/icons-material/Edit";
+import EmojiPeopleIcon from "@mui/icons-material/EmojiPeople";
+import SettingsIcon from "@mui/icons-material/Settings";
 import { makeStyles } from "@mui/styles";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
@@ -53,7 +53,7 @@ import ListItemText from "@mui/material/ListItemText";
 
 // import Demo from './components/demo';
 import HiguIcon from "./image/higuSample.jpg";
-import FriendsIcon from "./image/icons8-conference-64.png"
+import FriendsIcon from "./image/icons8-conference-64.png";
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -65,7 +65,7 @@ const useStyles = makeStyles((theme) => ({
     width: "300px",
   },
   list: {
-    height: "50px"
+    height: "50px",
   },
 }));
 
@@ -295,9 +295,7 @@ function App() {
               >
                 Pudding Profile
               </Typography>
-
               <Logout />
-
             </Toolbar>
           </AppBar>
 
@@ -337,12 +335,7 @@ function App() {
                       // to={{ pathname: "/" + selfUid }}
                       to={"/" + selfUid + "/home"}
                     >
-                      <img
-                        src={HiguIcon}
-                        alt="アイコン"
-                        width="40"
-                        height="40"
-                      />
+                      <FaceIcon sx={{ mr: 2 }} />
                       マイページ
                     </ListItemButton>
                   </List>
@@ -355,12 +348,7 @@ function App() {
                       component={Link}
                       to={"/" + selfUid + "/edit"}
                     >
-                      <img
-                        src={EditIcon}
-                        alt="アイコン"
-                        width="40"
-                        height="40"
-                      />
+                      <EditIcon sx={{ mr: 2 }} />
                       追加・編集
                     </ListItemButton>
                   </List>
@@ -374,43 +362,13 @@ function App() {
                       // component={Link}
                       // to={"/" + selfUid + "/friends"}
                     >
-                      <img
-                        src={FriendsIcon}
-                        alt="アイコン"
-                        width="40"
-                        height="40"
-                      />
-                      友達
+                      <EmojiPeopleIcon sx={{ mr: 2 }} /> 友達
                     </ListItemButton>
                   </List>
                 </div>
               ) : (
-                <>
-                  <List>
-                    <ListItemButton
-                      selected={selectedIndex === 0}
-                      onClick={(event) => {
-                        handleListItemClick(event, 0);
-                      }}
-                      component={Link}
-                      to="/"
-                    >
-                      <FaceIcon sx={{ mr: 2}} /> マイページ
-                    </ListItemButton>
-                  </List>
-                  <List>
-                    <ListItemButton
-                      selected={selectedIndex === 1}
-                      onClick={(event) => {
-                        handleListItemClick(event, 1);
-                      }}
-                      component={Link}
-                      to="/edit"
-                    >
-                      <EditIcon sx={{ mr: 2}} /> 追加・編集
-                    </ListItemButton>
-                  </List>
-                  <List>
+                <List>
+                  {selfUid && (
                     <ListItemButton
                       selected={selectedIndex === 2}
                       onClick={(event) => handleListItemClick(event, 2)}
@@ -419,33 +377,8 @@ function App() {
                     >
                       <EmojiPeopleIcon sx={{ mr: 2}} /> 友達
                     </ListItemButton>
-                  </List>
-                  <List>
-                    <ListItemButton
-                      selected={selectedIndex === 3}
-                      onClick={(event) => handleListItemClick(event, 3)}
-                      component={Link}
-                      to="/setting"
-                    >
-                      <SettingsIcon sx={{ mr: 2}} /> 設定
-                    </ListItemButton>
-                  </List>
-                  <List>
-                    <Logout />
-                  </List>
-                  <List>
-                    {selfUid && (
-                      <ListItemButton
-                        component={Link}
-                        to={{ pathname: "/" + selfUid + "/home" }}
-                      >
-                        友達のページです。
-                        <br />
-                        自分のページに戻る。
-                      </ListItemButton>
-                    )}
-                  </List>
-                </>
+                  )}
+                </List>
               )
             ) : (
               <List>
@@ -500,11 +433,11 @@ function App() {
                 component={Profile}
               />
             )} */}
-            <PrivateRoute
+            {/* <PrivateRoute
               exact
               path={"/" + selfUid + "/home"}
               component={Profile}
-            />
+            /> */}
             <PrivateRoute
               exact
               path={"/" + selfUid + "/edit"}
