@@ -197,7 +197,7 @@ const UserFollowingList = ({ selfUid }) => {
 
   return (
     <Box m={2}>
-      <Typography variant="h5">友達一覧</Typography>
+      <Typography variant="h5">お気に入りリスト</Typography>
       <List dense className={classes.root}>
         {followingUserDates.length > 0 &&
           followingUserDates.map((data, index) => {
@@ -362,7 +362,7 @@ function App() {
                         handleClickOpen();
                       }}
                     >
-                      <EmojiPeopleIcon sx={{ mr: 2 }} /> 友達
+                      <EmojiPeopleIcon sx={{ mr: 2 }} /> お気に入りリスト
                     </ListItemButton>
                   </List>
                   <Logout />

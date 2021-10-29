@@ -132,7 +132,7 @@ export default function FriendProfile() {
   const [category, setCategory] = useState("");
   const path = window.location.pathname;
   const otherUid = path.split("/")[1];
-  const [clicked, setCliclked] = useState(false);
+  const [clicked, setCliclked] = useState(true);
   const [selfUid, setSelfUid] = useState("");
   const [dateId, setDateId] = useState("");
 
@@ -170,9 +170,9 @@ export default function FriendProfile() {
         .then((snapshot) => {
           snapshot.docs.forEach((doc) => {
             setDateId(doc.id);
-			console.log("get deteld")
+            console.log("get deteld");
             console.log(dateId);
-			setCliclked(true);
+            setCliclked(true);
           });
         })
         .catch((error) => {

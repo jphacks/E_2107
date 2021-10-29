@@ -172,7 +172,9 @@ export default function EditProfile() {
         insta: insta.value,
         github: github.value,
         selectedValue: ""
-      });
+      }).then(
+        alert("保存されました")
+      )
     });
   };
 
