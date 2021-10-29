@@ -17,6 +17,7 @@ const Header = (props)=>{
       shouldForwardProp: (prop) => prop !== "open",
     })(({ theme, open }) => ({
       height: 64,
+      backgroundColor: "#eeeeee",
       transition: theme.transitions.create(["margin", "width"], {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,
