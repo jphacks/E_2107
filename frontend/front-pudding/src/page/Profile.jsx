@@ -1,28 +1,34 @@
+// react
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { useHistory } from "react-router-dom";
+
+import Logout from './Logout'
+
+// mui
 import { makeStyles } from "@mui/styles";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
-import HiguIcon from "../image/higuSample.jpg";
-import TwitterIcon from "../image/Twitter social icons - circle - blue.png";
-import InstaIcon from "../image/instagram.png";
-import FaceBookIcon from "../image/f_logo_RGB-Blue_100.png";
-
-import PropTypes from "prop-types";
 import DialogTitle from "@mui/material/DialogTitle";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 
+// img
+import HiguIcon from "../image/higuSample.jpg";
+import TwitterIcon from "../image/Twitter social icons - circle - blue.png";
+import InstaIcon from "../image/instagram.png";
+import FaceBookIcon from "../image/f_logo_RGB-Blue_100.png";
 import SkyImage from "../image/sky.jpeg";
 import GreenImage from "../image/green.jpeg";
 import ColorImage from "../image/color.jpeg";
+
+import PropTypes from "prop-types";
+
+// firebase
 import { db } from "../config/firebase";
 import { auth } from "../config/firebase";
-import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -141,11 +147,6 @@ export default function Profile() {
     setSelectedValue(value);
   };
 
-  const handleLogout = () => {
-    auth.signOut();
-    history.push("/signin");
-  };
-
   const [uid, setUid] = useState("");
   const [data, setData] = useState();
 
@@ -248,15 +249,7 @@ export default function Profile() {
                 src={HiguIcon}
                 sx={{ width: 130, height: 130, marginBottom: 2 }}
               />
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={() => {
-                  handleLogout();
-                }}
-              >
-              ログアウト
-              </Button>
+              <Logout />
               <Box
                 sx={{
                   marginTop: 2,
