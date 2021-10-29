@@ -117,14 +117,14 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   justifyContent: "flex-end",
 }));
 
-const UserList = ({ dateId, selfUid, followedUid }) => {
+const UserList = ({ dataId, selfUid, followedUid }) => {
   const classes = useStyles();
   const [clicked, setCliclked] = useState(true);
 
-  const onRemoveFollow = (dateId) => {
+  const onRemoveFollow = (dataId) => {
     setCliclked(false);
     const followsRef = db.collection("follows");
-    followsRef.doc(dateId).delete();
+    followsRef.doc(dataId).delete();
   };
 
   const onFollow = (selfUid, followedUid) => {
@@ -153,7 +153,7 @@ const UserList = ({ dateId, selfUid, followedUid }) => {
           variant="contained"
           size="medium"
           color="secondary"
-          onClick={() => onRemoveFollow(dateId)}
+          onClick={() => onRemoveFollow(dataId)}
         >
           フォロー中
         </Button>
@@ -175,21 +175,21 @@ const UserFollowingList = ({ selfUid }) => {
         console.log(snapshot);
         snapshot.forEach((doc) => {
           SetfollowedUid(doc.data().followed_uid);
-          const dateId = doc.data().id;
+          const dataId = doc.data().id;
           db.collection("users")
             .doc(doc.data().followed_uid)
             .get()
             .then((snapshot) => {
               console.log("match!");
               const followingUser = snapshot.data();
-              const Userdate = {
+              const Userdata = {
                 name: followingUser.name,
                 // 入れれたら
                 // image: followingUser.image.path,
                 uid: followingUser.uid,
-                id: dateId,
+                id: dataId,
               };
-              setFollowingUserDates((date) => [...date, Userdate]);
+              setFollowingUserDates((data) => [...data, Userdata]);
             });
         });
       });
@@ -200,22 +200,22 @@ const UserFollowingList = ({ selfUid }) => {
       <Typography variant="h5">友達一覧</Typography>
       <List dense className={classes.root}>
         {followingUserDates.length > 0 &&
-          followingUserDates.map((date, index) => {
+          followingUserDates.map((data, index) => {
             const labelId = `checkbox-list-secondary-label-${index}`;
-            const dateId = date.id;
+            const dataId = data.id;
             return (
-              <ListItem key={index} button className={classes.list}>
+              <ListItem key={index} button className={classes.list} component={Link} to={"/" + data.uid + "/home"}>
                 {/* 写真追加できたら */}
                 {/* <ListItemAvatar>
                       <Avatar
                         alt={`Avatar n°${index + 1}`}
-                        src={date.image}
+                        src={data.image}
                         className={classes.avatar}
                       />
                     </ListItemAvatar> */}
-                <ListItemText id={labelId} primary={date.name} />
+                <ListItemText id={labelId} primary={data.name} />
                 <UserList
-                  dateId={dateId}
+                  dataId={dataId}
                   selfUid={selfUid}
                   followedUid={followedUid}
                 />
@@ -361,8 +361,6 @@ function App() {
                         handleListItemClick(event, 2);
                         handleClickOpen();
                       }}
-                      // component={Link}
-                      // to={"/" + selfUid + "/friends"}
                     >
                       <EmojiPeopleIcon sx={{ mr: 2 }} /> 友達
                     </ListItemButton>
@@ -371,18 +369,18 @@ function App() {
                 </div>
               ) : (
                 <>
-                  <List>
-                    {selfUid && (
-                      <ListItemButton
-                        selected={selectedIndex === 2}
-                        onClick={(event) => handleListItemClick(event, 2)}
-                        component={Link}
-                        to="/friends"
-                      >
-                        <EmojiPeopleIcon sx={{ mr: 2}} /> 友達
-                      </ListItemButton>
-                    )}
-                  </List>
+                 <List>
+                  {selfUid && (
+                    <ListItemButton
+                      component={Link}
+                      to={{ pathname: "/" + selfUid + "/home" }}
+                    >
+                      友達のページです。
+                      <br />
+                      自分のページに戻る。
+                    </ListItemButton>
+                  )}
+                </List>
                   <Logout />
                 </>
               )
