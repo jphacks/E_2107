@@ -11,7 +11,9 @@ import { auth } from "../config/firebase";
 import { useHistory, Redirect } from "react-router-dom";
 import Profile from "./Profile";
 
-const theme = createTheme();
+const theme = createTheme({
+
+});
 
 // push("/creator/detail/" + uploader.uid));
 
