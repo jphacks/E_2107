@@ -227,8 +227,10 @@ export default function EditProfile() {
         twitter: twitter.value,
         insta: insta.value,
         github: github.value,
-        selectedValue: selectedValue.value
-      });
+        selectedValue: ""
+      }).then(
+        alert("保存されました")
+      )
     });
   };
 

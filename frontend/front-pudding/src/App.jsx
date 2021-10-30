@@ -5,42 +5,39 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 import { Link, useHistory, withRouter, Redirect } from "react-router-dom";
 
 // @mui
-import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
-import Drawer from "@mui/material/Drawer";
-import CssBaseline from "@mui/material/CssBaseline";
-import Toolbar from "@mui/material/Toolbar";
-import List from "@mui/material/List";
-import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
-import IconButton from "@mui/material/IconButton";
-// import Button from "@mui/material/Button";
-// import Stack from '@mui/material/Stack';
+import Button from "@mui/material/Button";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import MuiAppBar from "@mui/material/AppBar";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListIcon from "@mui/icons-material/List";
-import FaceIcon from "@mui/icons-material/Face";
-import EditIcon from "@mui/icons-material/Edit";
-import EmojiPeopleIcon from "@mui/icons-material/EmojiPeople";
-import SettingsIcon from "@mui/icons-material/Settings";
-import { makeStyles } from "@mui/styles";
-import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 // import DialogActions from "@mui/material/DialogActions";
+import CssBaseline from "@mui/material/CssBaseline";
+import Divider from "@mui/material/Divider";
+import Drawer from "@mui/material/Drawer";
+import EditIcon from "@mui/icons-material/Edit";
+import EmojiPeopleIcon from "@mui/icons-material/EmojiPeople";
+import FaceIcon from "@mui/icons-material/Face";
+import IconButton from "@mui/material/IconButton";
+import List from "@mui/material/List";
+import ListItemButton from "@mui/material/ListItemButton";
+import { makeStyles } from "@mui/styles";
+import SettingsIcon from "@mui/icons-material/Settings";
+// import Stack from '@mui/material/Stack';
+import { styled, useTheme } from "@mui/material/styles";
+import Typography from "@mui/material/Typography";
 
 // 認証系
 import { useAuthContext } from "./authContext";
 
 // ページインポート
+import EditProfile from "./page/EditProfile";
+import FriendProfile from "./page/FriendProfile";
+import Header from "./page/Header"
+import Logout from "./page/Logout";
+import Profile from "./page/Profile";
 import SignIn from "./page/SignIn";
 import SignUp from "./page/SignUp";
-import Profile from "./page/Profile";
-import FriendProfile from "./page/FriendProfile";
 // import Setting from "./page/Setting";
-import EditProfile from "./page/EditProfile";
-import Logout from "./page/Logout"
 
 // ルーティング
 import PrivateRoute from "./components/PrivateRoute";
@@ -52,8 +49,10 @@ import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
 import ListItemText from "@mui/material/ListItemText";
 
 // import Demo from './components/demo';
-import HiguIcon from "./image/higuSample.jpg";
-import FriendsIcon from "./image/icons8-conference-64.png";
+// import HiguIcon from "./image/higuSample.jpg";
+// import FriendsIcon from "./image/icons8-conference-64.png";
+
+const drawerWidth = 250;
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -69,7 +68,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const drawerWidth = 250;
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({
@@ -89,25 +87,6 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   })
 );
 
-const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== "open",
-})(({ theme, open }) => ({
-  height: 64,
-  transition: theme.transitions.create(["margin", "width"], {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  ...(open && {
-    height: 64,
-    width: `calc(100% - ${drawerWidth}px)`,
-    marginLeft: `${drawerWidth}px`,
-    transition: theme.transitions.create(["margin", "width"], {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  }),
-}));
-
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
@@ -118,7 +97,6 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 }));
 
 const UserList = ({ dataId, selfUid, followedUid }) => {
-  const classes = useStyles();
   const [clicked, setCliclked] = useState(true);
 
   const onRemoveFollow = (dataId) => {
@@ -197,7 +175,7 @@ const UserFollowingList = ({ selfUid }) => {
 
   return (
     <Box m={2}>
-      <Typography variant="h5">友達一覧</Typography>
+      <Typography variant="h5">お気に入りリスト</Typography>
       <List dense className={classes.root}>
         {followingUserDates.length > 0 &&
           followingUserDates.map((data, index) => {
@@ -275,31 +253,14 @@ function App() {
       <Switch>
         <Box sx={{ display: "flex" }}>
           <CssBaseline />
-          <AppBar position="fixed" open={open} color="transparent">
-            <Toolbar>
-              <IconButton
-                color="inherit"
-                aria-label="open drawer"
-                onClick={handleDrawerOpen}
-                edge="start"
-                sx={{ mr: 2, ...(open && { display: "none" }) }}
-              >
-                <ListIcon></ListIcon>
-              </IconButton>
-              <Typography
-                variant="h3"
-                noWrap
-                component="div"
-                className={classes.title}
-                class="st-Header_start" // 左よせ
-              >
-                Pudding Profile
-              </Typography>
-              {/* ログアウトボタン */}
-              <Logout />
-            </Toolbar>
-          </AppBar>
-
+          {/* ヘッダー */}
+          <Header
+            classes={classes}
+            drawerWidth={drawerWidth}
+            handleDrawerOpen={handleDrawerOpen}
+            open={open}
+            user={user}
+          />
           <Drawer
             sx={{
               width: drawerWidth,
@@ -324,7 +285,7 @@ function App() {
             </DrawerHeader>
             <Divider />
             {user ? (
-
+              // 自分のページの場合
               uid === selfUid ? (
                 <div>
                   <List>
@@ -362,25 +323,28 @@ function App() {
                         handleClickOpen();
                       }}
                     >
-                      <EmojiPeopleIcon sx={{ mr: 2 }} /> 友達
+                      <EmojiPeopleIcon sx={{ mr: 2 }} /> お気に入りリスト
                     </ListItemButton>
                   </List>
+                  {/* ログアウトボタン */}
                   <Logout />
                 </div>
               ) : (
+                // フレンドのページの場合
                 <>
-                 <List>
-                  {selfUid && (
-                    <ListItemButton
-                      component={Link}
-                      to={{ pathname: "/" + selfUid + "/home" }}
-                    >
-                      友達のページです。
-                      <br />
-                      自分のページに戻る。
-                    </ListItemButton>
-                  )}
-                </List>
+                  <List>
+                    {selfUid && (
+                      <ListItemButton
+                        component={Link}
+                        to={{ pathname: "/" + selfUid + "/home" }}
+                      >
+                        友達のページです。
+                        <br />
+                        自分のページに戻る。
+                      </ListItemButton>
+                    )}
+                  </List>
+                  {/* ログアウトボタン */}
                   <Logout />
                 </>
               )
@@ -405,8 +369,9 @@ function App() {
           <Main open={open}>
             <DrawerHeader />
 
-            {user ? (
-              uid !== selfUid ? (
+            {user ? 
+            ((uid && selfUid) ? (
+                uid !== selfUid ? (
                 <PrivateRoute
                   exact
                   path={"/" + uid + "/home"}
@@ -418,8 +383,7 @@ function App() {
                   path={"/" + selfUid + "/home"}
                   component={Profile}
                 />
-              )
-            ) : (
+              )) : (
               // <Redirect
               //   exact
               //   path="/"
@@ -427,7 +391,8 @@ function App() {
               //   component={Profile}
               // />
               <></>
-            )}
+            )) : (<></>)
+          }
             {/* "/"の時のリダイレクト不可 */}
             {/* {uid === selfUid && (
               <Redirect
