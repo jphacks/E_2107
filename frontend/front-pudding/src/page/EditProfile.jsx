@@ -28,9 +28,12 @@ import Typography from "@mui/material/Typography";
 import { db } from "../config/firebase";
 import { auth } from "../config/firebase";
 
+import firebase from "firebase/compat";
+import { storage } from "../config/firebase";
+
 const drawerWidth = 240;
 
-const backs = [SkyImage, GreenImage, ColorImage];
+
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -99,15 +102,66 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const backs = [SkyImage, GreenImage, ColorImage];
+
+export function onclick(selectedValue) {
+  console.log(selectedValue)
+}
+
 export default function EditProfile() {
   const classes = useStyles();
+
+  // 画像ボタン処理
   const [open, setOpen] = React.useState(false);
   const [selectedValue, setSelectedValue] = React.useState(backs[0]);
-
   const handleClickOpen = () => {
     setOpen(true);
   };
 
+  //
+  const [image, setImage] = React.useState("");
+  const [imageUrl, setImageUrl] = React.useState("");
+
+  const handleImage = event => {
+    const image = event.target.files[0];
+    setImage(image);
+  };
+
+
+  //アップロード処理 
+  const uploadTask = storage.ref(`/images/${image.name}`).put(image);
+  uploadTask.on(
+    firebase.storage.TaskEvent.STATE_CHANGED,
+    null,
+    null,
+    function () {
+      console.log('Upload complete');
+    }
+  );
+
+  const next = snapshot => {
+    // 進行中のsnapshotを得る
+    // アップロードの進行度を表示
+    const percent = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+    console.log(percent + "% done");
+    console.log(snapshot);
+  };
+  const error = error => {
+    // エラーハンドリング
+    console.log(error);
+  };
+  const complete = () => {
+    // 完了後の処理
+    // 画像表示のため、アップロードした画像のURLを取得
+    storage
+      .ref("images")
+      .child(image.name)
+      .getDownloadURL()
+      .then(fireBaseUrl => {
+        setImageUrl(fireBaseUrl);
+      });
+  };
+  //
   const handleClose = (value) => {
     setOpen(false);
     setSelectedValue(value);
@@ -121,22 +175,24 @@ export default function EditProfile() {
     };
 
     const handleListItemClick = (value) => {
+      setSelectedValue(value);
       onClose(value);
     };
+
 
     return (
       <Dialog onClose={handleClose} open={open}>
         <DialogTitle>背景画像を選択</DialogTitle>
         <Stack direction="row" spacing={2}>
-          {backs.map((email) => (
-            <ListItem
-              button
-              onClick={() => handleListItemClick(email)}
-              key={email}
-            >
-              <img src={email} height={100} width={100} alt="サンプル画像" />
-            </ListItem>
-          ))}
+          <ListItem button onClick={() => handleListItemClick(backs[0])}>
+            <img src={SkyImage} height={100} width={100} alt="サンプル画像" />
+          </ListItem>
+          <ListItem button onClick={() => handleListItemClick(backs[1])}>
+            <img src={GreenImage} height={100} width={100} alt="サンプル画像" />
+          </ListItem>
+          <ListItem button onClick={() => handleListItemClick(backs[2])}>
+            <img src={ColorImage} height={100} width={100} alt="サンプル画像" />
+          </ListItem>
         </Stack>
       </Dialog>
     );
@@ -144,17 +200,34 @@ export default function EditProfile() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const { born, job, hobby, dream, name, talent, favorite_food } =
-      event.target.elements;
+    const {
+      born,
+      job,
+      hobby,
+      dream,
+      name,
+      talent,
+      favorite_food,
+      icon,
+      twitter,
+      insta,
+      github,
+      selectedValue,
+    } = event.target.elements;
     auth.onAuthStateChanged((user) => {
       db.collection("users").doc(user.uid).update({
         born: born.value,
         job: job.value,
         hobby: hobby.value,
-        // dream: dream.value,
+        dream: dream.value,
         name: name.value,
         talent: talent.value,
         favorite_food: favorite_food.value,
+        icon: icon.value,
+        twitter: twitter.value,
+        insta: insta.value,
+        github: github.value,
+        selectedValue: selectedValue.value
       });
     });
   };
@@ -174,7 +247,6 @@ export default function EditProfile() {
         .get()
         .then((snapshots) => {
           const data = snapshots.data();
-          console.log(data.name);
           setData(data);
         });
     }
@@ -186,281 +258,421 @@ export default function EditProfile() {
         <Typography variant="h4">追加・編集</Typography>
       </Box>
       <CssBaseline />
-      <Box
-        className={classes.form}
-        component="form"
-        noValidate
-        onSubmit={handleSubmit}
-      >
+
+      <Box textAlign="center">
         {data && (
-        <Grid container spacing={1}>
-          <Grid item xs={12} sm={8}>
-            <TableContainer component={Paper}>
-              <TableBody>
-                <TableRow>
-                  <TableCell width="300px">
-                    <Box
-                      display="inline"
-                      lineHeight="50px"
-                      fontStyle="Roboto"
-                      fontSize="18px"
-                      m="15px"
-                    >
-                      氏名
-                    </Box>
-                  </TableCell>
-                  <TableCell width="800px">
-                    <Box display="inline" lineHeight="50px">
-                      <Grid item xs={12} sm={11}>
-                        <TextField
-                          autoComplete="name"
-                          name="name"
-                          variant="outlined"
-                          required
-                          fullWidth
-                          defaultValue={data.name}
-                          id="name"
-                          label="氏名"
-                        />
+          <Grid container spacing={3}>
+            <Grid item xs={12} sm={7}>
+              <TableContainer component={Paper}>
+                <TableBody>
+                  <TableRow>
+                    <TableCell width="300px">
+                      <Box
+                        display="inline"
+                        lineHeight="50px"
+                        fontStyle="Roboto"
+                        fontSize="18px"
+                        m="15px"
+                      >
+                        名前
+                      </Box>
+                    </TableCell>
+                    <TableCell width="800px">
+                      <Box display="inline" lineHeight="50px">
+                        <Grid item xs={12} sm={11}>
+                          <TextField
+                            autoComplete="name"
+                            name="name"
+                            variant="outlined"
+                            required
+                            fullWidth
+                            defaultValue={data.name}
+                            id="name"
+                            label="氏名"
+                          />
+                        </Grid>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell width="300px">
+                      <Box
+                        display="inline"
+                        lineHeight="50px"
+                        fontStyle="Roboto"
+                        fontSize="18px"
+                        m="15px"
+                      >
+                        出身
+                      </Box>
+                    </TableCell>
+                    <TableCell width="650px">
+                      <Box display="inline" lineHeight="50px">
+                        <Grid item xs={12} sm={11}>
+                          <TextField
+                            autoComplete="born"
+                            name="born"
+                            variant="outlined"
+                            required
+                            fullWidth
+                            id="born"
+                            label="出身"
+                            defaultValue={data.born}
+                          />
+                        </Grid>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell width="300px">
+                      <Box
+                        display="inline"
+                        lineHeight="50px"
+                        fontStyle="Roboto"
+                        fontSize="18px"
+                        m="15px"
+                      >
+                        学校・仕事
+                      </Box>
+                    </TableCell>
+                    <TableCell width="650px">
+                      <Box display="inline" lineHeight="50px">
+                        <Grid item xs={12} sm={11}>
+                          <TextField
+                            autoComplete="job"
+                            name="job"
+                            variant="outlined"
+                            required
+                            fullWidth
+                            id="job"
+                            label="大学"
+                            defaultValue={data.job}
+                          />
+                        </Grid>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell width="300px">
+                      <Box
+                        display="inline"
+                        lineHeight="50px"
+                        fontStyle="Roboto"
+                        fontSize="18px"
+                        m="15px"
+                      >
+                        趣味
+                      </Box>
+                    </TableCell>
+                    <TableCell width="650px">
+                      <Box display="inline" lineHeight="50px">
+                        <Grid item xs={12} sm={11}>
+                          <TextField
+                            autoComplete="hobby"
+                            name="hobby"
+                            variant="outlined"
+                            required
+                            fullWidth
+                            id="CompanyId"
+                            label="趣味"
+                            defaultValue={data.hobby}
+                          />
+                        </Grid>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell width="300px">
+                      <Box
+                        display="inline"
+                        lineHeight="50px"
+                        fontStyle="Roboto"
+                        fontSize="18px"
+                        m="15px"
+                      >
+                        好きな食べ物
+                      </Box>
+                    </TableCell>
+                    <TableCell width="650px">
+                      <Box display="inline" lineHeight="50px">
+                        <Grid item xs={12} sm={11}>
+                          <TextField
+                            autoComplete="favorite_food"
+                            name="favorite_food"
+                            variant="outlined"
+                            required
+                            fullWidth
+                            id="favorite_food"
+                            label="好きな食べ物"
+                            defaultValue={data.favorite_food}
+                          />
+                        </Grid>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell width="300px">
+                      <Box
+                        display="inline"
+                        lineHeight="50px"
+                        fontStyle="Roboto"
+                        fontSize="18px"
+                        m="15px"
+                      >
+                        特技
+                      </Box>
+                    </TableCell>
+                    <TableCell width="650px">
+                      <Box display="inline" lineHeight="50px">
+                        <Grid item xs={12} sm={11}>
+                          <TextField
+                            autoComplete="talent"
+                            name="talent"
+                            variant="outlined"
+                            required
+                            fullWidth
+                            id="talent"
+                            label="特技"
+                            defaultValue={data.talent}
+                          />
+                        </Grid>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell width="300px">
+                      <Box
+                        display="inline"
+                        lineHeight="50px"
+                        fontStyle="Roboto"
+                        fontSize="18px"
+                        m="15px"
+                      >
+                        夢
+                      </Box>
+                    </TableCell>
+                    <TableCell width="650px">
+                      <Box display="inline" lineHeight="50px">
+                        <Grid item xs={12} sm={11}>
+                          <TextField
+                            autoComplete="dream"
+                            name="dream"
+                            variant="outlined"
+                            required
+                            fullWidth
+                            id="dream"
+                            label="特技"
+                            defaultValue={data.dream}
+                          />
+                        </Grid>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                  {/* <TableRow>
+                    <SelectDialog
+                      selectedValue={selectedValue}
+                      open={open}
+                      onClose={handleClose}
+                    />
+                    <TableCell width="300px">
+                      <Box
+                        display="inline"
+                        fontStyle="Roboto"
+                        fontSize="18px"
+                        m="15px"
+                      >
+                        背景画像
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      <Grid
+                        container
+                        spacing={2}
+                        alignItems="center"
+                        justify="center"
+                      >
+                        <Grid item xs={12} sm={5}>
+                          <img
+                            src={selectedValue}
+                            height={100}
+                            width={100}
+                            alt="サンプル画像"
+                          />
+                        </Grid>
+                        <Grid item xs={12} sm={7}>
+                          <Button
+                            variant="contained"
+                            color="inherit"
+                            component="label"
+                            onClick={handleClickOpen}
+                          >
+                            画像を選択
+                          </Button>
+                        </Grid>
                       </Grid>
-                    </Box>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell width="300px">
-                    <Box
-                      display="inline"
-                      lineHeight="50px"
-                      fontStyle="Roboto"
-                      fontSize="18px"
-                      m="15px"
-                    >
-                      出身
-                    </Box>
-                  </TableCell>
-                  <TableCell width="650px">
-                    <Box display="inline" lineHeight="50px">
-                      <Grid item xs={12} sm={11}>
-                        <TextField
-                          autoComplete="born"
-                          name="born"
-                          variant="outlined"
-                          required
-                          fullWidth
-                          id="born"
-                          label="出身"
-                          defaultValue={data.born}
-                        />
-                      </Grid>
-                    </Box>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell width="300px">
-                    <Box
-                      display="inline"
-                      lineHeight="50px"
-                      fontStyle="Roboto"
-                      fontSize="18px"
-                      m="15px"
-                    >
-                      大学
-                    </Box>
-                  </TableCell>
-                  <TableCell width="650px">
-                    <Box display="inline" lineHeight="50px">
-                      <Grid item xs={12} sm={11}>
-                        <TextField
-                          autoComplete="job"
-                          name="job"
-                          variant="outlined"
-                          required
-                          fullWidth
-                          id="job"
-                          label="大学"
-                          defaultValue={data.job}
-                        />
-                      </Grid>
-                    </Box>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell width="300px">
-                    <Box
-                      display="inline"
-                      lineHeight="50px"
-                      fontStyle="Roboto"
-                      fontSize="18px"
-                      m="15px"
-                    >
-                      趣味
-                    </Box>
-                  </TableCell>
-                  <TableCell width="650px">
-                    <Box display="inline" lineHeight="50px">
-                      <Grid item xs={12} sm={11}>
-                        <TextField
-                          autoComplete="hobby"
-                          name="hobby"
-                          variant="outlined"
-                          required
-                          fullWidth
-                          id="CompanyId"
-                          label="趣味"
-                          defaultValue={data.hobby}
-                        />
-                      </Grid>
-                    </Box>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell width="300px">
-                    <Box
-                      display="inline"
-                      lineHeight="50px"
-                      fontStyle="Roboto"
-                      fontSize="18px"
-                      m="15px"
-                    >
-                      好きな食べ物
-                    </Box>
-                  </TableCell>
-                  <TableCell width="650px">
-                    <Box display="inline" lineHeight="50px">
-                      <Grid item xs={12} sm={11}>
-                        <TextField
-                          autoComplete="favorite_food"
-                          name="favorite_food"
-                          variant="outlined"
-                          required
-                          fullWidth
-                          id="favorite_food"
-                          label="好きな食べ物"
-                          defaultValue={data.favorite_food}
-                        />
-                      </Grid>
-                    </Box>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell width="300px">
-                    <Box
-                      display="inline"
-                      lineHeight="50px"
-                      fontStyle="Roboto"
-                      fontSize="18px"
-                      m="15px"
-                    >
-                      特技
-                    </Box>
-                  </TableCell>
-                  <TableCell width="650px">
-                    <Box display="inline" lineHeight="50px">
-                      <Grid item xs={12} sm={11}>
-                        <TextField
-                          autoComplete="talent"
-                          name="talent"
-                          variant="outlined"
-                          required
-                          fullWidth
-                          id="talent"
-                          label="特技"
-                          defaultValue={data.talent}
-                        />
-                      </Grid>
-                    </Box>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
+                    </TableCell>
+                  </TableRow> */}
+                </TableBody>
+              </TableContainer>
+            </Grid>
+
+            <Grid item xs={12} sm={5} m={0}>
+              <TableContainer component={Paper}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                  }}
+                  m="15px"
+                >
+                  <Avatar
+                    alt="UserIcon"
+                    // アイコンをFirebaseから変えてくる
+                    src={"https://firebasestorage.googleapis.com/v0/b/pj-pudding.appspot.com/o/images%2F%E3%83%95%E3%82%9A%E3%83%AD%E7%94%BB.jpg?alt=media&token=3202d8b6-62c3-4458-a515-9ae9bd9f7e81"}
+                    sx={{ width: 130, height: 130, marginBottom: 3 }}
+                  />
+                  {/* アイコン */}
+                  <Button variant="contained" color="inherit" component="label">
+                    アイコン画像を選択
+                    <input
+                      accept="image/*"
+                      style={{ display: "none" }}
+                      id="raised-button-file"
+                      multiple
+                      type="file"
+                      className={classes.inputFileBtnHide}
+                      onChange={handleImage}
+
+                    />
+                  </Button>
                   <SelectDialog
                     selectedValue={selectedValue}
                     open={open}
                     onClose={handleClose}
                   />
-                  <TableCell width="300px">
-                    <Box
-                      display="inline"
-                      fontStyle="Roboto"
-                      fontSize="18px"
-                      m="15px"
-                    >
-                      背景画像
-                    </Box>
-                  </TableCell>
-                  <TableCell>
-                    <Grid
-                      container
-                      spacing={2}
-                      alignItems="center"
-                      justify="center"
-                    >
-                      <Grid item xs={12} sm={5}>
-                        <img
-                          src={selectedValue}
-                          height={100}
-                          width={100}
-                          alt="サンプル画像"
-                        />
-                      </Grid>
-                      <Grid item xs={12} sm={7}>
-                        <Button
-                          variant="contained"
-                          color="inherit"
-                          component="label"
-                          onClick={handleClickOpen}
-                        >
-                          画像を選択
-                        </Button>
-                      </Grid>
+                  <Box m={4}>
+                    <Grid item sm={12}>
+                      <img
+                        src={selectedValue}
+                        height={100}
+                        width={100}
+                        alt="サンプル画像"
+                      />
                     </Grid>
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </TableContainer>
-          </Grid>
+                    <Grid item sm={12}>
+                      <Button
+                        variant="contained"
+                        color="inherit"
+                        component="label"
+                        onClick={handleClickOpen}
+                      >
+                        背景を選択
+                      </Button>
+                    </Grid>
+                  </Box>
 
-          <Grid item xs={12} sm={4}>
-            <TableContainer component={Paper}>
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                }}
-                m="15px"
-              >
-                <Avatar
-                  alt="UserIcon"
-                  src={HiguIcon}
-                  sx={{ width: 130, height: 130, marginBottom: 3 }}
-                />
-                <Button variant="contained" color="inherit" component="label">
-                  アイコン画像を選択
-                  <input
-                    accept="image/*"
-                    style={{ display: "none" }}
-                    id="raised-button-file"
-                    multiple
-                    type="file"
-                    className={classes.inputFileBtnHide}
-                  />
-                </Button>
-                <Box m={4}>
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    className={classes.submit}
-                  >
-                    <Typography variant="h6">
-                      保存する
-                      </Typography>
-                  </Button>
+                  <TableRow>
+                    <TableCell width="300px">
+                      <Box
+                        display="inline"
+                        lineHeight="50px"
+                        fontStyle="Roboto"
+                        fontSize="18px"
+                        m="15px"
+                      >
+                        TwitterのID
+                      </Box>
+                    </TableCell>
+                    <TableCell width="400px">
+                      <Box display="inline" lineHeight="50px">
+                        <Grid item xs={12} sm={11}>
+                          <TextField
+                            autoComplete="twitter"
+                            name="twitter"
+                            variant="outlined"
+                            required
+                            fullWidth
+                            defaultValue={data.twitter}
+                            id="twitter"
+                            label="氏名"
+                          />
+                        </Grid>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell width="270px">
+                      <Box
+                        display="inline"
+                        lineHeight="50px"
+                        fontStyle="Roboto"
+                        fontSize="18px"
+                        m="15px"
+                      >
+                        InstagramのID
+                      </Box>
+                    </TableCell>
+                    <TableCell width="400px">
+                      <Box display="inline" lineHeight="50px">
+                        <Grid item xs={12} sm={11}>
+                          <TextField
+                            autoComplete="insta"
+                            name="insta"
+                            variant="outlined"
+                            required
+                            fullWidth
+                            id="insta"
+                            label="出身"
+                            defaultValue={data.insta}
+                          />
+                        </Grid>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell width="300px">
+                      <Box
+                        display="inline"
+                        lineHeight="50px"
+                        fontStyle="Roboto"
+                        fontSize="18px"
+                        m="15px"
+                      >
+                        githubのID
+                      </Box>
+                    </TableCell>
+                    <TableCell width="400px">
+                      <Box display="inline" lineHeight="50px">
+                        <Grid item xs={12} sm={11}>
+                          <TextField
+                            autoComplete="github"
+                            name="github"
+                            variant="outlined"
+                            required
+                            fullWidth
+                            id="github"
+                            label="大学"
+                            defaultValue={data.github}
+                          />
+                        </Grid>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                  <Box m={2}>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      color="primary"
+                      className={classes.submit}
+                    >
+                      <Typography variant="h6">保存する</Typography>
+                    </Button>
+                  </Box>
                 </Box>
-              </Box>
-            </TableContainer>
+              </TableContainer>
+            </Grid>
           </Grid>
-        </Grid>
         )}
       </Box>
     </Container>

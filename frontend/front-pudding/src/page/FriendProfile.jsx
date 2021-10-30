@@ -1,34 +1,28 @@
-// react
 import React, { useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
-
-import Logout from "./Logout";
-
-// mui
+import axios from "axios";
 import { makeStyles } from "@mui/styles";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Avatar from "@mui/material/Avatar";
+import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
-import DialogTitle from "@mui/material/DialogTitle";
-import Dialog from "@mui/material/Dialog";
-import DialogContent from "@mui/material/DialogContent";
-
-// img
 import HiguIcon from "../image/higuSample.jpg";
 import TwitterIcon from "../image/Twitter social icons - circle - blue.png";
 import InstaIcon from "../image/instagram.png";
 import FaceBookIcon from "../image/f_logo_RGB-Blue_100.png";
+
+import PropTypes from "prop-types";
+import DialogTitle from "@mui/material/DialogTitle";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+
 import SkyImage from "../image/sky.jpeg";
 import GreenImage from "../image/green.jpeg";
 import ColorImage from "../image/color.jpeg";
-
-import PropTypes from "prop-types";
-
-// firebase
 import { db } from "../config/firebase";
 import { auth } from "../config/firebase";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -98,11 +92,8 @@ function SimpleDialog(props) {
         {category === "born" && <Typography variant="h4">出身</Typography>}
         {category === "job" && <Typography variant="h4">大学・職場</Typography>}
         {category === "hobby" && <Typography variant="h4">趣味</Typography>}
-        {category === "favorite_food" && (
-          <Typography variant="h4">特技</Typography>
-        )}
-        {category === "dream" && <Typography variant="h4">特技</Typography>}
         {category === "talent" && <Typography variant="h4">特技</Typography>}
+        {!category && <Typography variant="h4">ありません</Typography>}
       </DialogTitle>
       <DialogContent>
         <Box className={classes.dialog}>
@@ -115,15 +106,12 @@ function SimpleDialog(props) {
           {category === "hobby" && (
             <Typography variant="h5">{data.hobby}</Typography>
           )}
-          {category === "favorite_food" && (
-            <Typography variant="h5">{data.favorite_food}</Typography>
-          )}
-          {category === "dream" && (
-            <Typography variant="h5">{data.dream}</Typography>
-          )}
           {category === "talent" && (
             <Typography variant="h5">{data.talent}</Typography>
           )}
+          {!category && <Typography variant="h5">ありません</Typography>}
+          {/* <Typography variant="h4">{data.born}</Typography>
+        <Typography variant="h4">{data.hobby}</Typography> */}
         </Box>
       </DialogContent>
     </Dialog>
@@ -136,12 +124,17 @@ SimpleDialog.propTypes = {
   selectedValue: PropTypes.string.isRequired,
 };
 
-export default function Profile() {
+export default function FriendProfile() {
+  console.log("friends");
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [selectedValue, setSelectedValue] = React.useState(emails[1]);
   const [category, setCategory] = useState("");
-  const history = useHistory();
+  const path = window.location.pathname;
+  const otherUid = path.split("/")[1];
+  const [clicked, setCliclked] = useState(false);
+  const [selfUid, setSelfUid] = useState("");
+  const [dateId, setDateId] = useState("");
 
   const handleClickOpen = (props) => {
     setCategory(props);
@@ -153,25 +146,59 @@ export default function Profile() {
     setSelectedValue(value);
   };
 
-  const [uid, setUid] = useState("");
-  const [data, setData] = useState();
+  auth.onAuthStateChanged((user) => {
+    if (user) {
+      setSelfUid(user.uid);
+    }
+  });
 
+  const [data, setData] = useState();
   useEffect(() => {
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        setUid(user.uid);
-      }
-    });
-    if (uid) {
+    if (otherUid) {
       db.collection("users")
-        .doc(uid)
+        .doc(otherUid)
         .get()
         .then((snapshots) => {
           const data = snapshots.data();
           setData(data);
+          console.log(data);
+        });
+      db.collection("follows")
+        .where("following_uid", "==", selfUid)
+        .where("followed_uid", "==", otherUid)
+        .get()
+        .then((snapshot) => {
+          snapshot.docs.forEach((doc) => {
+            setDateId(doc.id);
+			console.log("get deteld")
+            console.log(dateId);
+			setCliclked(true);
+          });
+        })
+        .catch((error) => {
+          console.error("Error removing document: ", error);
         });
     }
-  }, [uid]);
+  }, []);
+
+  const onFollow = () => {
+    setCliclked(true);
+    const followsRef = db.collection("follows").doc();
+    const friendInitialData = {
+      following_uid: selfUid,
+      followed_uid: otherUid,
+      id: followsRef.id,
+    };
+    console.log("following!");
+    followsRef.set(friendInitialData);
+  };
+
+  const onRemoveFollow = () => {
+    setCliclked(false);
+    const followsRef = db.collection("follows");
+    console.log("delete!");
+    followsRef.doc(dateId).delete();
+  };
 
   return (
     <Grid
@@ -179,7 +206,6 @@ export default function Profile() {
       spacing={0}
       className={classes.container}
       sx={{
-        // ここのバックグラウンドを編集画面で設定した背景にする
         backgroundImage: `url(${SkyImage})`,
         backgroundRepeat: "no-repeat",
         backgroundPosition: "center bottom",
@@ -209,7 +235,7 @@ export default function Profile() {
             className={classes.outerCircle}
             onClick={() => handleClickOpen("job")}
           >
-            <Typography variant="h5">学校・仕事</Typography>
+            <Typography variant="h5">大学</Typography>
           </Box>
         </Container>
       </Grid>
@@ -255,7 +281,27 @@ export default function Profile() {
                 src={HiguIcon}
                 sx={{ width: 130, height: 130, marginBottom: 2 }}
               />
-              <Logout />
+              {!clicked ? (
+                <Button
+                  variant="outlined"
+                  size="medium"
+                  color="secondary"
+                  className={classes.margin}
+                  onClick={onFollow}
+                >
+                  お気に入りに追加
+                </Button>
+              ) : (
+                <Button
+                  variant="contained"
+                  size="medium"
+                  color="secondary"
+                  className={classes.margin}
+                  onClick={onRemoveFollow}
+                >
+                  お気に入り解除
+                </Button>
+              )}
               <Box
                 sx={{
                   marginTop: 2,
@@ -313,7 +359,7 @@ export default function Profile() {
         <Container fixed>
           <Box
             className={classes.outerCircle}
-            onClick={() => handleClickOpen("favorite_food")}
+            onClick={() => handleClickOpen("")}
           >
             <Typography variant="h5">好きな食べ物</Typography>
           </Box>
@@ -323,9 +369,9 @@ export default function Profile() {
         <Container fixed>
           <Box
             className={classes.outerCircle}
-            onClick={() => handleClickOpen("dream")}
+            onClick={() => handleClickOpen("")}
           >
-            <Typography variant="h5">夢</Typography>
+            <Typography variant="h5">好きな曲</Typography>
           </Box>
         </Container>
       </Grid>
@@ -335,7 +381,7 @@ export default function Profile() {
             className={classes.outerCircle}
             onClick={() => handleClickOpen("talent")}
           >
-            <Typography variant="h5">特技</Typography>
+            <Typography variant="h5">マイブーム</Typography>
           </Box>
         </Container>
       </Grid>
