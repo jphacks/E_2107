@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { BrowserRouter, Switch } from "react-router-dom";
 
-import { Link, useHistory, withRouter, Redirect } from "react-router-dom";
+import { Link, withRouter, Redirect } from "react-router-dom";
 
 // @mui
 import Box from "@mui/material/Box";
@@ -21,7 +21,7 @@ import IconButton from "@mui/material/IconButton";
 import List from "@mui/material/List";
 import ListItemButton from "@mui/material/ListItemButton";
 import { makeStyles } from "@mui/styles";
-import SettingsIcon from "@mui/icons-material/Settings";
+// import SettingsIcon from "@mui/icons-material/Settings";
 // import Stack from '@mui/material/Stack';
 import { styled, useTheme } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
@@ -369,29 +369,31 @@ function App() {
           <Main open={open}>
             <DrawerHeader />
 
-            {user ? (
-              uid !== selfUid ? (
+              {user ? (
+                uid === selfUid ? (
+                  <>
+                    <PrivateRoute
+                      exact
+                      path={"/" + selfUid}
+                      component={Profile}
+                    />
+                  </>
+                ) : (
                 <PrivateRoute
                   exact
-                  path={"/" + uid + "/home"}
+                  path={"/" + uid}
                   component={FriendProfile}
                 />
-              ) : (
-                <PrivateRoute
-                  exact
-                  path={"/" + selfUid + "/home"}
-                  component={Profile}
-                />
-              )
-            ) : (
-              // <Redirect
-              //   exact
-              //   path="/"
-              //   to={{ pathname: "/" + selfUid + "/home"}}
-              //   component={Profile}
-              // />
-              <></>
-            )}
+                )
+              ):(
+                <>
+                    <Redirect
+                      exact
+                      to="/"
+                      component={Profile}
+                    />
+                  </>
+              )}
             {/* "/"の時のリダイレクト不可 */}
             {/* {uid === selfUid && (
               <Redirect

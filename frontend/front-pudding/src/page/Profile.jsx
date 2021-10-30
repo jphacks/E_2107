@@ -1,6 +1,5 @@
 // react
 import React, { useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
 
 // page
 import Attribute from './Attribute'
@@ -26,7 +25,6 @@ import HiguIcon from "../image/higuSample.jpg";
 import TwitterIcon from "../image/Twitter social icons - circle - blue.png";
 import InstaIcon from "../image/instagram.png";
 import FaceBookIcon from "../image/github.png";
-import SkyImage from "../image/sky.jpeg";
 // import GreenImage from "../image/green.jpeg";
 // import ColorImage from "../image/color.jpeg";
 
