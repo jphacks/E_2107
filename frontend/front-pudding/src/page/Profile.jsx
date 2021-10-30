@@ -1,7 +1,8 @@
 // react
 import React, { useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
 
+// page
+import Attribute from './Attribute'
 import Logout from "./Logout";
 
 // mui
@@ -11,129 +12,31 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Avatar from "@mui/material/Avatar";
 import Container from "@mui/material/Container";
-import DialogTitle from "@mui/material/DialogTitle";
-import Dialog from "@mui/material/Dialog";
-import DialogContent from "@mui/material/DialogContent";
+
+// firebase
+import { db } from "../config/firebase";
+import { auth } from "../config/firebase";
+
+// page
+import SimpleDialog from './SimpleDialog'
 
 // img
 import HiguIcon from "../image/higuSample.jpg";
 import TwitterIcon from "../image/Twitter social icons - circle - blue.png";
 import InstaIcon from "../image/instagram.png";
 import FaceBookIcon from "../image/github.png";
-import SkyImage from "../image/sky.jpeg";
 // import GreenImage from "../image/green.jpeg";
 // import ColorImage from "../image/color.jpeg";
 
+// config　
+import categoryDictionaly from '../config/dictionaly'
+
 import PropTypes from "prop-types";
 
-// firebase
-import { db } from "../config/firebase";
-import { auth } from "../config/firebase";
-
-import { styled } from '@mui/material/styles';
-import ButtonBase from '@mui/material/ButtonBase';
 
 // ---------------------------Profileのパーツの設定---------------------------------------
-const image = {
-  url: 'SkyImage', // これを読み込ませたいがうまくいかない
-  title: 'Born',
-  width: '300px',
-};
 
-const image_born = {
-  url: 'Born', 
-  title: '',
-  width: '300px',
-}
-const image_job = {
-  url: '', 
-  title: 'School・Job',
-  width: '300px',
-}
-const image_hobby = {
-  url: '', 
-  title: 'Hobby',
-  width: '300px',
-}
-const image_favorite_food = {
-  url: '', 
-  title: 'Favorite Food',
-  width: '300px',
-}
-const image_dream = {
-  url: '', 
-  title: 'Dream',
-  width: '300px',
-}
-const image_talent = {
-  url: '', 
-  title: 'Talent',
-  width: '300px',
-}
-
-const ImageButton = styled(ButtonBase)(({ theme }) => ({
-  position: 'relative',
-  height: 200,
-  [theme.breakpoints.down('sm')]: {
-    width: '100% !important', // Overrides inline-style
-    height: 100,
-  },
-  '&:hover, &.Mui-focusVisible': {
-    zIndex: 1,
-    '& .MuiImageBackdrop-root': {
-      opacity: 0.15,
-    },
-    '& .MuiImageMarked-root': {
-      opacity: 0,
-    },
-    '& .MuiTypography-root': {
-      border: '4px solid currentColor',
-    },
-  },
-}));
-
-const ImageSrc = styled('span')({
-  position: 'absolute',
-  left: 0,
-  right: 0,
-  top: 0,
-  bottom: 0,
-  backgroundSize: 'cover',
-  backgroundPosition: 'center 40%',
-});
-
-const Image = styled('span')(({ theme }) => ({
-  position: 'absolute',
-  left: 0,
-  right: 0,
-  top: 0,
-  bottom: 0,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  color: theme.palette.common.white,
-}));
-
-const ImageBackdrop = styled('span')(({ theme }) => ({
-  position: 'absolute',
-  left: 0,
-  right: 0,
-  top: 0,
-  bottom: 0,
-  backgroundColor: theme.palette.common.black,
-  opacity: 0.4,
-  transition: theme.transitions.create('opacity'),
-}));
-
-const ImageMarked = styled('span')(({ theme }) => ({
-  height: 3,
-  width: 18,
-  backgroundColor: theme.palette.common.white,
-  position: 'absolute',
-  bottom: -2,
-  left: 'calc(50% - 9px)',
-  transition: theme.transitions.create('opacity'),
-}));
+// categoryDictionalyから辞書を引っ張り、Attribute.jsxにて対応する文字列を引っ張っています。
 
 // -------------------------------Profileのパーツの設定 ここまで---------------------------------
 
@@ -191,52 +94,6 @@ const useStyles = makeStyles((theme) => ({
 
 const emails = ["username@gmail.com", "user02@gmail.com"];
 
-function SimpleDialog(props) {
-  const classes = useStyles();
-  const { onClose, selectedValue, open, category, data } = props;
-
-  const handleClose = () => {
-    onClose(selectedValue);
-  };
-
-  return (
-    <Dialog onClose={handleClose} open={open}>
-      <DialogTitle className={classes.dialogtitle}>
-        {category === "born" && <Typography variant="h4">出身</Typography>}
-        {category === "job" && <Typography variant="h4">大学・職場</Typography>}
-        {category === "hobby" && <Typography variant="h4">趣味</Typography>}
-        {category === "favorite_food" && (
-          <Typography variant="h4">特技</Typography>
-        )}
-        {category === "dream" && <Typography variant="h4">夢</Typography>}
-        {category === "talent" && <Typography variant="h4">特技</Typography>}
-      </DialogTitle>
-      <DialogContent>
-        <Box className={classes.dialog}>
-          {category === "born" && (
-            <Typography variant="h5">{data.born}</Typography>
-          )}
-          {category === "job" && (
-            <Typography variant="h5">{data.job}</Typography>
-          )}
-          {category === "hobby" && (
-            <Typography variant="h5">{data.hobby}</Typography>
-          )}
-          {category === "favorite_food" && (
-            <Typography variant="h5">{data.favorite_food}</Typography>
-          )}
-          {category === "dream" && (
-            <Typography variant="h5">{data.dream}</Typography>
-          )}
-          {category === "talent" && (
-            <Typography variant="h5">{data.talent}</Typography>
-          )}
-        </Box>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
 SimpleDialog.propTypes = {
   onClose: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired,
@@ -247,10 +104,10 @@ export default function Profile() {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [selectedValue, setSelectedValue] = React.useState(emails[1]);
-  const [category, setCategory] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   const handleClickOpen = (props) => {
-    setCategory(props);
+    setSelectedCategory(props);
     setOpen(true);
   };
 
@@ -292,105 +149,33 @@ export default function Profile() {
       }}
     >
       <SimpleDialog
-        selectedValue={selectedValue}
         open={open}
-        onClose={handleClose}
-        category={category}
+        onClose={handleClose(selectedValue)}
+        selectedCategory={selectedCategory}
         data={data}
       />
       <Grid item md={4} xs={6} className={classes.bottom}>
         <Container fixed>
-          <ImageButton
-            onClick={() => handleClickOpen("born")}
-            focusRipple
-            key={image.title}
-            style={{
-              width: image.width,
-            }}
-          >
-            <ImageSrc style={{ backgroundImage: `url(${SkyImage})` }} />
-            <ImageBackdrop className="MuiImageBackdrop-root" />
-            <Image>
-              <Typography
-                component="span"
-                variant="h5"
-                color="inherit"
-                sx={{
-                  position: 'relative',
-                  p: 4,
-                  pt: 2,
-                  pb: (theme) => `calc(${theme.spacing(1)} + 6px)`,
-                }}
-              >
-                {image.title}
-                <ImageMarked className="MuiImageMarked-root" />
-              </Typography>
-            </Image>
-          </ImageButton>
+        <Attribute
+          dict={categoryDictionaly[0]}
+          handleClickOpen={handleClickOpen}
+        />
         </Container>
       </Grid>
       <Grid item md={4} xs={6} className={classes.center}>
         <Container fixed>
-          <ImageButton
-            onClick={() => handleClickOpen("job")}
-            focusRipple
-            key={image.title}
-            style={{
-              width: image.width,
-            }}
-          >
-
-            <ImageSrc style={{ backgroundImage: `url(${image.url})` }} />
-            <ImageBackdrop className="MuiImageBackdrop-root" />
-            <Image>
-              <Typography
-                component="span"
-                variant="h5"
-                color="inherit"
-                sx={{
-                  position: 'relative',
-                  p: 4,
-                  pt: 2,
-                  pb: (theme) => `calc(${theme.spacing(1)} + 6px)`,
-                }}
-              >
-                School・Job
-                <ImageMarked className="MuiImageMarked-root" />
-              </Typography>
-            </Image>
-          </ImageButton>
-
+          <Attribute
+            dict={categoryDictionaly[1]}
+            handleClickOpen={handleClickOpen}
+          />
         </Container>
       </Grid>
       <Grid item md={4} xs={6} className={classes.bottom}>
         <Container fixed>
-          <ImageButton
-            onClick={() => handleClickOpen("hobby")}
-            focusRipple
-            key={image.title}
-            style={{
-              width: image.width,
-            }}
-          >
-            <ImageSrc style={{ backgroundImage: `url(${image.url})` }} />
-            <ImageBackdrop className="MuiImageBackdrop-root" />
-            <Image>
-              <Typography
-                component="span"
-                variant="h5"
-                color="inherit"
-                sx={{
-                  position: 'relative',
-                  p: 4,
-                  pt: 2,
-                  pb: (theme) => `calc(${theme.spacing(1)} + 6px)`,
-                }}
-              >
-                Hobby
-                <ImageMarked className="MuiImageMarked-root" />
-              </Typography>
-            </Image>
-          </ImageButton>
+          <Attribute
+            dict={categoryDictionaly[2]}
+            handleClickOpen={handleClickOpen}
+          />
         </Container>
       </Grid>
       <Grid item md={4} xs={6} className={classes.center}>
@@ -481,100 +266,26 @@ export default function Profile() {
       </Grid>
       <Grid item md={4} xs={6} className={classes.top}>
         <Container fixed>
-          <ImageButton
-            onClick={() => handleClickOpen("favorite_food")}
-            focusRipple
-            key={image.title}
-            style={{
-              width: image.width,
-            }}
-
-          >
-            <ImageSrc style={{ backgroundImage: `url(${image.url})` }} />
-            <ImageBackdrop className="MuiImageBackdrop-root" />
-            <Image>
-              <Typography
-                component="span"
-                variant="h5"
-                color="inherit"
-                sx={{
-                  position: 'relative',
-                  p: 4,
-                  pt: 2,
-                  pb: (theme) => `calc(${theme.spacing(1)} + 6px)`,
-                }}
-              >
-                Favorite Food
-                <ImageMarked className="MuiImageMarked-root" />
-              </Typography>
-            </Image>
-          </ImageButton>
+        <Attribute
+          dict={categoryDictionaly[3]}
+          handleClickOpen={handleClickOpen}
+        />
         </Container>
       </Grid>
       <Grid item md={4} xs={6} className={classes.center}>
         <Container fixed>
-
-          <ImageButton
-            onClick={() => handleClickOpen("dream")}
-            focusRipple
-            key={image.title}
-            style={{
-              width: image.width,
-            }}
-          >
-            <ImageSrc style={{ backgroundImage: `url(${image.url})` }} />
-            <ImageBackdrop className="MuiImageBackdrop-root" />
-            <Image>
-              <Typography
-                component="span"
-                variant="h5"
-                color="inherit"
-                sx={{
-                  position: 'relative',
-                  p: 4,
-                  pt: 2,
-                  pb: (theme) => `calc(${theme.spacing(1)} + 6px)`,
-                }}
-              >
-                Dream
-                <ImageMarked className="MuiImageMarked-root" />
-              </Typography>
-            </Image>
-          </ImageButton>
-
+          <Attribute
+            dict={categoryDictionaly[4]}
+            handleClickOpen={handleClickOpen}
+          />
         </Container>
       </Grid>
       <Grid item md={4} xs={12} className={classes.top}>
         <Container fixed>
-          <ImageButton
-            onClick={() => handleClickOpen("talent")}
-            focusRipple
-            key={image.title}
-            style={{
-              width: image.width,
-            }}
-          >
-
-            <ImageSrc style={{ backgroundImage: `url(${SkyImage})` }} />
-            <ImageBackdrop className="MuiImageBackdrop-root" />
-            <Image>
-              <Typography
-                component="span"
-                variant="h5"
-                color="inherit"
-                sx={{
-                  position: 'relative',
-                  p: 4,
-                  pt: 2,
-                  pb: (theme) => `calc(${theme.spacing(1)} + 6px)`,
-                }}
-              >
-                  Talent
-                <ImageMarked className="MuiImageMarked-root" />
-              </Typography>
-            </Image>
-          </ImageButton>
-
+          <Attribute
+            dict={categoryDictionaly[5]}
+            handleClickOpen={handleClickOpen}
+          />
         </Container>
       </Grid>
     </Grid>

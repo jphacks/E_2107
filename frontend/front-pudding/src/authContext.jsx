@@ -8,31 +8,33 @@ export function useAuthContext() {
 }
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState("");
+  const [user, setUser] = useState('');
   const [loading, setLoading] = useState(true);
 
   const value = {
     user,
-	loading,
+    loading,
   };
 
   useEffect(() => {
-    const unsubscribed = auth.onAuthStateChanged((user) => {
+
+    const unSubscribed = auth.onAuthStateChanged((user) => {
       setUser(user);
-	    setLoading(false);
+      setLoading(false);
     });
     return () => {
-      unsubscribed();
+      unSubscribed();
     };
   }, []);
 
   if (loading) {
-	return <p>loading...</p>;
+    return <p>loading...</p>;
   } else {
-	return (
-	  <AuthContext.Provider value={value}>
-		{!loading && children}
-	  </AuthContext.Provider>
-	);
+    return (
+      <AuthContext.Provider value={value}>
+        {!loading && children}
+        {children}
+      </AuthContext.Provider>
+    );
   }
 }

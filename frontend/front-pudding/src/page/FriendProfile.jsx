@@ -1,28 +1,30 @@
+// react
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { makeStyles } from "@mui/styles";
-import Grid from "@mui/material/Grid";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
+
+// mui
 import Avatar from "@mui/material/Avatar";
+import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
-import HiguIcon from "../image/higuSample.jpg";
-import TwitterIcon from "../image/Twitter social icons - circle - blue.png";
-import InstaIcon from "../image/instagram.png";
-import FaceBookIcon from "../image/github.png";
+import Grid from "@mui/material/Grid";
+import { makeStyles } from "@mui/styles";
+import Typography from "@mui/material/Typography";
 
-import PropTypes from "prop-types";
-import DialogTitle from "@mui/material/DialogTitle";
-import Dialog from "@mui/material/Dialog";
-import DialogContent from "@mui/material/DialogContent";
-
-import SkyImage from "../image/sky.jpeg";
-import GreenImage from "../image/green.jpeg";
-import ColorImage from "../image/color.jpeg";
+// firebase
 import { db } from "../config/firebase";
 import { auth } from "../config/firebase";
-import { useHistory } from "react-router-dom";
+
+// page
+import SimpleDialog from './SimpleDialog'
+
+// img
+import FaceBookIcon from "../image/github.png";
+import HiguIcon from "../image/higuSample.jpg";
+import InstaIcon from "../image/instagram.png";
+import SkyImage from "../image/sky.jpeg";
+import TwitterIcon from "../image/Twitter social icons - circle - blue.png";
+
+// import PropTypes from "prop-types";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -78,57 +80,11 @@ const useStyles = makeStyles((theme) => ({
 
 const emails = ["username@gmail.com", "user02@gmail.com"];
 
-function SimpleDialog(props) {
-  const classes = useStyles();
-  const { onClose, selectedValue, open, category, data } = props;
-
-  const handleClose = () => {
-    onClose(selectedValue);
-  };
-
-  return (
-    <Dialog onClose={handleClose} open={open}>
-      <DialogTitle className={classes.dialogtitle}>
-        {category === "born" && <Typography variant="h4">出身</Typography>}
-        {category === "job" && <Typography variant="h4">大学・職場</Typography>}
-        {category === "hobby" && <Typography variant="h4">趣味</Typography>}
-        {category === "favorite_food" && (
-          <Typography variant="h4">特技</Typography>
-        )}
-        {category === "dream" && <Typography variant="h4">夢</Typography>}
-        {category === "talent" && <Typography variant="h4">特技</Typography>}
-      </DialogTitle>
-      <DialogContent>
-        <Box className={classes.dialog}>
-          {category === "born" && (
-            <Typography variant="h5">{data.born}</Typography>
-          )}
-          {category === "job" && (
-            <Typography variant="h5">{data.job}</Typography>
-          )}
-          {category === "hobby" && (
-            <Typography variant="h5">{data.hobby}</Typography>
-          )}
-          {category === "favorite_food" && (
-            <Typography variant="h5">{data.favorite_food}</Typography>
-          )}
-          {category === "dream" && (
-            <Typography variant="h5">{data.dream}</Typography>
-          )}
-          {category === "talent" && (
-            <Typography variant="h5">{data.talent}</Typography>
-          )}
-        </Box>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
 export default function FriendProfile() {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [selectedValue, setSelectedValue] = React.useState(emails[1]);
-  const [category, setCategory] = useState("");
+  const [selectedCategory, setSlectedCategory] = useState("");
   const path = window.location.pathname;
   const otherUid = path.split("/")[1];
   const [clicked, setCliclked] = useState(false);
@@ -136,7 +92,7 @@ export default function FriendProfile() {
   const [dateId, setDateId] = useState("");
 
   const handleClickOpen = (props) => {
-    setCategory(props);
+    setSlectedCategory(props);
     setOpen(true);
   };
 
@@ -213,10 +169,9 @@ export default function FriendProfile() {
       }}
     >
       <SimpleDialog
-        selectedValue={selectedValue}
         open={open}
-        onClose={handleClose}
-        category={category}
+        onClose={handleClose(selectedValue)}
+        selectedCategory={selectedCategory}
         data={data}
       />
       <Grid item md={4} xs={6} className={classes.bottom}>

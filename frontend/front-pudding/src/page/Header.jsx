@@ -1,5 +1,5 @@
 // react
-import React, { useState, useEffect } from "react";
+import React from "react";
 
 // mui
 import IconButton from "@mui/material/IconButton";
@@ -17,7 +17,7 @@ const Header = (props)=>{
       shouldForwardProp: (prop) => prop !== "open",
     })(({ theme, open }) => ({
       height: 64,
-      background: "#fff",
+      backgroundColor: "#eeeeee",
       transition: theme.transitions.create(["margin", "width"], {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,

@@ -1,17 +1,23 @@
+// react
 import * as React from "react";
-import Button from "@mui/material/Button";
-import CssBaseline from "@mui/material/CssBaseline";
-import TextField from "@mui/material/TextField";
-import Grid from "@mui/material/Grid";
+import { useHistory } from "react-router-dom";
+
+// mui
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { auth } from "../config/firebase";
-import { useHistory, Redirect } from "react-router-dom";
-import Profile from "./Profile";
+import CssBaseline from "@mui/material/CssBaseline";
+import Grid from "@mui/material/Grid";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
 
-const theme = createTheme();
+// firebase
+import { auth } from "../config/firebase";
+
+const theme = createTheme({
+
+});
 
 // push("/creator/detail/" + uploader.uid));
 
