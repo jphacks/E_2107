@@ -370,13 +370,12 @@ function App() {
             <DrawerHeader />
 
             {user ?
-            ((uid && selfUid) ? (
-                uid !== selfUid ? (
+              (　uid !== selfUid ? (
                 <PrivateRoute
                   exact
                   path={"/" + uid}
                   component={FriendProfile}
-                /
+                />
               ) : (
                 <PrivateRoute
                   exact
@@ -390,8 +389,9 @@ function App() {
               //   to={{ pathname: "/" + selfUid + "/home"}}
               //   component={Profile}
               // />
-              <></>
-            )) : (<></>)
+              <>
+              </>
+            )}
             {/* "/"の時のリダイレクト不可 */}
             {/* {uid === selfUid && (
               <Redirect
